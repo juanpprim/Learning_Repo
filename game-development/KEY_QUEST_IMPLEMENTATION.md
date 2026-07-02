@@ -26,7 +26,7 @@ bottom is the acceptance bar for calling either game finished.
 
 - [x] Create the Godot 4.x project: `project.godot` with main scene, window
       size 1152×648, `canvas_items` stretch, nearest-neighbor filtering.
-- [ ] Define the input map: `move_left` (←/A), `move_right` (→/D),
+- [x] Define the input map: `move_left` (←/A), `move_right` (→/D),
       `jump` (Space/↑/W).
 - [ ] Add `GameState` autoload (`scripts/game_state.gd`): key counters,
       respawn point, level index, `key_collected` / `all_keys_collected`
