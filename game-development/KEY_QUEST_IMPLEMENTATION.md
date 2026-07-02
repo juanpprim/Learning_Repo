@@ -77,7 +77,7 @@ bottom is the acceptance bar for calling either game finished.
       those settings and deterministic GUIDs.)
 - [x] Implement `GameManager.cs`: singleton, key counters, respawn point,
       `KeyCollected` / `AllKeysCollected` events, `NextLevel()` / `Restart()`.
-- [ ] Implement `LevelBuilder.cs`: parse the map TextAsset and construct
+- [x] Implement `LevelBuilder.cs`: parse the map TextAsset and construct
       tiles (merged colliders), keys, elevators, door, player, edge walls,
       fall-respawn trigger; register key count; pass bounds to the camera.
 - [ ] Implement `PlayerController.cs`: Rigidbody2D movement 5.6 u/s, jump
