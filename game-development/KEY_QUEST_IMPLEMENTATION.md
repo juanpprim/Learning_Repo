@@ -18,8 +18,9 @@ bottom is the acceptance bar for calling either game finished.
       waveforms.
 - [x] Run both scripts; commit the scripts and copy the generated files into
       `key-quest-godot/assets/` and `key-quest-unity/Assets/Sprites|Audio/`.
-- [ ] Eyeball every sprite at 4× zoom: bright, high-contrast, readable
+- [x] Eyeball every sprite at 4× zoom: bright, high-contrast, readable
       silhouettes; kid looks friendly; key reads as a key.
+      (Reviewed via `generate_sprites.py --contact-sheet`.)
 
 ## Phase 1 — Godot game (`key-quest-godot/`)
 
