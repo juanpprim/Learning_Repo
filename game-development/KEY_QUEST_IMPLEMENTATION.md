@@ -47,7 +47,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Build `level_builder.gd` + `Level.tscn`: construct tiles, keys,
       elevators, door, player, edge walls, fall-respawn zone, and camera
       limits from the ASCII map for the current level index.
-- [ ] Implement gentle respawn: falling below the map fades and returns the
+- [x] Implement gentle respawn: falling below the map fades and returns the
       kid to the last ground position with a soft boop — no other effect.
 - [ ] Build `Celebration.tscn`: confetti, big kid sprite, fanfare, icon-only
       replay that loops back to Level 1.
