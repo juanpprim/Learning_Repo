@@ -95,7 +95,7 @@ bottom is the acceptance bar for calling either game finished.
       collect.
 - [x] Implement `CameraFollow.cs`: smooth follow clamped to level bounds,
       background `#0e1726`.
-- [ ] Create the four scenes (`Level1..3`, `Celebration`) with only camera +
+- [x] Create the four scenes (`Level1..3`, `Celebration`) with only camera +
       Bootstrap + HUD canvas each, and add them to Build Settings.
 - [ ] Build `Celebration.cs` scene content: confetti, big kid sprite,
       fanfare, icon-only replay looping back to Level 1.
