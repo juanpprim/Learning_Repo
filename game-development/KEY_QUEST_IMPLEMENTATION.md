@@ -97,7 +97,7 @@ bottom is the acceptance bar for calling either game finished.
       background `#0e1726`.
 - [x] Create the four scenes (`Level1..3`, `Celebration`) with only camera +
       Bootstrap + HUD canvas each, and add them to Build Settings.
-- [ ] Build `Celebration.cs` scene content: confetti, big kid sprite,
+- [x] Build `Celebration.cs` scene content: confetti, big kid sprite,
       fanfare, icon-only replay looping back to Level 1.
 - [ ] Playtest pass in the editor: complete Levels 1→2→3→celebration→loop
       twice in a row.
