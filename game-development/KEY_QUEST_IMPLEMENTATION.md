@@ -40,7 +40,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Build `Elevator.tscn` + `elevator.gd`: `AnimatableBody2D`, sine-eased
       looping tween bottom↔top at 48 px/s with 1 s end pauses, carries the
       player.
-- [ ] Build `Door.tscn` + `door.gd`: closed/grey until `all_keys_collected`,
+- [x] Build `Door.tscn` + `door.gd`: closed/grey until `all_keys_collected`,
       then open/green + chime + sparkles; entering loads the next level.
 - [ ] Build `HUD.tscn` + `hud.gd`: one big key icon per key, grey → gold with
       a pop when collected. Icon-only, no text.
