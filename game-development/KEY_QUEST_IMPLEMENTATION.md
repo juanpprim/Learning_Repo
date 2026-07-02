@@ -13,7 +13,7 @@ bottom is the acceptance bar for calling either game finished.
       the assets table of the specs (§2.7): kid idle/run×2/jump, key spin ×4,
       circuit tile, chip tile, elevator cab, door closed/open, HUD key icon,
       background props — exact sizes and palette from the spec.
-- [ ] Write `tools/generate_audio.py` that produces the five WAVs (jump, key
+- [x] Write `tools/generate_audio.py` that produces the five WAVs (jump, key
       arpeggio, door chime, win fanfare, respawn boop) as short chiptune-style
       waveforms.
 - [ ] Run both scripts; commit the scripts and copy the generated files into
