@@ -24,7 +24,7 @@ bottom is the acceptance bar for calling either game finished.
 
 ## Phase 1 — Godot game (`key-quest-godot/`)
 
-- [ ] Create the Godot 4.x project: `project.godot` with main scene, window
+- [x] Create the Godot 4.x project: `project.godot` with main scene, window
       size 1152×648, `canvas_items` stretch, nearest-neighbor filtering.
 - [ ] Define the input map: `move_left` (←/A), `move_right` (→/D),
       `jump` (Space/↑/W).
