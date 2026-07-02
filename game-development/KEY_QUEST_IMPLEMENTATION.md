@@ -37,7 +37,7 @@ bottom is the acceptance bar for calling either game finished.
       coyote time 0.15 s, sprite flip, idle/run/jump animations, jump sound.
 - [x] Build `Key.tscn` + `key.gd`: spin animation, `body_entered` pickup,
       arpeggio + sparkle particles, updates `GameState`.
-- [ ] Build `Elevator.tscn` + `elevator.gd`: `AnimatableBody2D`, sine-eased
+- [x] Build `Elevator.tscn` + `elevator.gd`: `AnimatableBody2D`, sine-eased
       looping tween bottom↔top at 48 px/s with 1 s end pauses, carries the
       player.
 - [ ] Build `Door.tscn` + `door.gd`: closed/grey until `all_keys_collected`,
