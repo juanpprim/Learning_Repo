@@ -89,7 +89,7 @@ bottom is the acceptance bar for calling either game finished.
       1.5 u/s with 1 s end pauses; parents the player while ridden.
       (Carries riders by applying the cab's movement delta to their
       rigidbody — the physics-safe equivalent of transform parenting.)
-- [ ] Implement `LevelExit.cs`: closed until `AllKeysCollected`, then open +
+- [x] Implement `LevelExit.cs`: closed until `AllKeysCollected`, then open +
       chime + sparkles; trigger loads the next scene.
 - [ ] Implement `HudController.cs`: icon-only key row, grey → gold pop on
       collect.
