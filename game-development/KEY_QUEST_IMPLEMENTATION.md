@@ -91,7 +91,7 @@ bottom is the acceptance bar for calling either game finished.
       rigidbody — the physics-safe equivalent of transform parenting.)
 - [x] Implement `LevelExit.cs`: closed until `AllKeysCollected`, then open +
       chime + sparkles; trigger loads the next scene.
-- [ ] Implement `HudController.cs`: icon-only key row, grey → gold pop on
+- [x] Implement `HudController.cs`: icon-only key row, grey → gold pop on
       collect.
 - [ ] Implement `CameraFollow.cs`: smooth follow clamped to level bounds,
       background `#0e1726`.
