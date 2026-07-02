@@ -42,7 +42,7 @@ bottom is the acceptance bar for calling either game finished.
       player.
 - [x] Build `Door.tscn` + `door.gd`: closed/grey until `all_keys_collected`,
       then open/green + chime + sparkles; entering loads the next level.
-- [ ] Build `HUD.tscn` + `hud.gd`: one big key icon per key, grey → gold with
+- [x] Build `HUD.tscn` + `hud.gd`: one big key icon per key, grey → gold with
       a pop when collected. Icon-only, no text.
 - [ ] Build `level_builder.gd` + `Level.tscn`: construct tiles, keys,
       elevators, door, player, edge walls, fall-respawn zone, and camera
