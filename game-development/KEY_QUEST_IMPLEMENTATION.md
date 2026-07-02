@@ -49,7 +49,7 @@ bottom is the acceptance bar for calling either game finished.
       limits from the ASCII map for the current level index.
 - [x] Implement gentle respawn: falling below the map fades and returns the
       kid to the last ground position with a soft boop — no other effect.
-- [ ] Build `Celebration.tscn`: confetti, big kid sprite, fanfare, icon-only
+- [x] Build `Celebration.tscn`: confetti, big kid sprite, fanfare, icon-only
       replay that loops back to Level 1.
 - [ ] Playtest pass: complete Levels 1→2→3→celebration→loop twice in a row.
 
