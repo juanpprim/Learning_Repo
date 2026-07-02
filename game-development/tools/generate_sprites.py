@@ -24,7 +24,7 @@ from PIL import Image, ImageDraw
 HERE = Path(__file__).resolve().parent
 DEFAULT_TARGETS = [
     HERE.parent / "key-quest-godot" / "assets" / "sprites",
-    HERE.parent / "key-quest-unity" / "Assets" / "Sprites",
+    HERE.parent / "key-quest-unity" / "Assets" / "Resources" / "Sprites",
 ]
 
 # Palette from the specs (§2.7) plus supporting shades.

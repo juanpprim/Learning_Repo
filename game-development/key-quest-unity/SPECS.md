@@ -198,10 +198,10 @@ background `#0e1726` with soft LED dots.
 key-quest-unity/
   Packages/
     manifest.json               # minimal: 2D sprite, built-in modules
-  ProjectSettings/              # minimal committed settings (version, tags, input axes)
+  ProjectSettings/              # minimal committed settings (version, Force Text, 2D mode)
   Assets/
     Scenes/
-      Level1.unity              # near-empty: Bootstrap object + camera + light HUD canvas
+      Level1.unity              # near-empty: Bootstrap object + camera (HUD built in code)
       Level2.unity
       Level3.unity
       Celebration.unity
@@ -215,14 +215,20 @@ key-quest-unity/
       HudController.cs
       CameraFollow.cs
       Celebration.cs
-    Levels/
-      level1.txt                # the ASCII maps as TextAssets (verbatim from §2.5)
-      level2.txt
-      level3.txt
-    Sprites/  (generated PNGs, imported with Pixels Per Unit = 32, filter = Point)
-    Audio/    (generated WAVs)
+    Resources/                  # loaded by path at runtime (no hand-wired scene refs)
+      Levels/
+        level1.txt              # the ASCII maps as TextAssets (verbatim from §2.5)
+        level2.txt
+        level3.txt
+      Sprites/  (generated PNGs + .meta: Pixels Per Unit = 32, filter = Point)
+      Audio/    (generated WAVs)
   .gitignore                    # Unity standard: Library/, Temp/, Logs/, obj/, UserSettings/
 ```
+
+Sprites/Levels/Audio live under `Assets/Resources/` so every script loads
+its assets with `Resources.Load` — no serialized asset references in scene
+YAML, which keeps the hand-committable scenes tiny. Jump keys (Space/↑/W)
+are read as `KeyCode`s in code, so the default `InputManager` axes suffice.
 
 **Bootstrap approach (important):** scenes are kept nearly empty — each level
 scene contains only a `Main Camera`, an empty `Bootstrap` GameObject with

@@ -22,7 +22,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 DEFAULT_TARGETS = [
     HERE.parent / "key-quest-godot" / "assets" / "audio",
-    HERE.parent / "key-quest-unity" / "Assets" / "Audio",
+    HERE.parent / "key-quest-unity" / "Assets" / "Resources" / "Audio",
 ]
 
 SAMPLE_RATE = 44100

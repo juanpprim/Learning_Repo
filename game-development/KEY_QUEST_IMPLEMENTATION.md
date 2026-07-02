@@ -71,8 +71,10 @@ bottom is the acceptance bar for calling either game finished.
       **verbatim** from SPECS.md §2.5.
       (Placed under `Assets/Resources/Levels/` so scripts load them via
       `Resources.Load` with no hand-wired scene references.)
-- [ ] Import generated sprites (Pixels Per Unit = 32, Point filter, no
+- [x] Import generated sprites (Pixels Per Unit = 32, Point filter, no
       compression) and audio.
+      (`tools/generate_unity_metas.py` writes the texture .meta files with
+      those settings and deterministic GUIDs.)
 - [ ] Implement `GameManager.cs`: singleton, key counters, respawn point,
       `KeyCollected` / `AllKeysCollected` events, `NextLevel()` / `Restart()`.
 - [ ] Implement `LevelBuilder.cs`: parse the map TextAsset and construct
