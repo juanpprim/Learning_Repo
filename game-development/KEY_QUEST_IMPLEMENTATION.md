@@ -60,10 +60,13 @@ bottom is the acceptance bar for calling either game finished.
 
 ## Phase 2 — Unity game (`key-quest-unity/`)
 
-- [ ] Create the project skeleton: `Packages/manifest.json` (2D sprite +
+- [x] Create the project skeleton: `Packages/manifest.json` (2D sprite +
       built-in modules), minimal `ProjectSettings/` (project version, Force
       Text serialization, build scene list, jump buttons W/↑), Unity
       `.gitignore`.
+      (Build scene list lands with the scenes item; jump keys W/↑/Space are
+      read as `KeyCode`s in `PlayerController` so no `InputManager.asset`
+      edit is needed — Unity regenerates default axes for Horizontal.)
 - [ ] Add `Assets/Levels/level1..3.txt` with the 3 ASCII maps copied
       **verbatim** from SPECS.md §2.5.
 - [ ] Import generated sprites (Pixels Per Unit = 32, Point filter, no
