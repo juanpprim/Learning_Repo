@@ -31,7 +31,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Add `GameState` autoload (`scripts/game_state.gd`): key counters,
       respawn point, level index, `key_collected` / `all_keys_collected`
       signals, `next_level()` / `restart()`.
-- [ ] Add `scripts/levels.gd` with the 3 ASCII maps copied **verbatim** from
+- [x] Add `scripts/levels.gd` with the 3 ASCII maps copied **verbatim** from
       SPECS.md §2.5.
 - [ ] Build `Player.tscn` + `player.gd`: move 180 px/s, jump ≥ 3.5 tiles,
       coyote time 0.15 s, sprite flip, idle/run/jump animations, jump sound.
