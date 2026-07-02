@@ -75,7 +75,7 @@ bottom is the acceptance bar for calling either game finished.
       compression) and audio.
       (`tools/generate_unity_metas.py` writes the texture .meta files with
       those settings and deterministic GUIDs.)
-- [ ] Implement `GameManager.cs`: singleton, key counters, respawn point,
+- [x] Implement `GameManager.cs`: singleton, key counters, respawn point,
       `KeyCollected` / `AllKeysCollected` events, `NextLevel()` / `Restart()`.
 - [ ] Implement `LevelBuilder.cs`: parse the map TextAsset and construct
       tiles (merged colliders), keys, elevators, door, player, edge walls,
