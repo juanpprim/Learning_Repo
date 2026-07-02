@@ -28,7 +28,7 @@ bottom is the acceptance bar for calling either game finished.
       size 1152×648, `canvas_items` stretch, nearest-neighbor filtering.
 - [x] Define the input map: `move_left` (←/A), `move_right` (→/D),
       `jump` (Space/↑/W).
-- [ ] Add `GameState` autoload (`scripts/game_state.gd`): key counters,
+- [x] Add `GameState` autoload (`scripts/game_state.gd`): key counters,
       respawn point, level index, `key_collected` / `all_keys_collected`
       signals, `next_level()` / `restart()`.
 - [ ] Add `scripts/levels.gd` with the 3 ASCII maps copied **verbatim** from
