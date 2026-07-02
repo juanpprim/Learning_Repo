@@ -9,7 +9,7 @@ bottom is the acceptance bar for calling either game finished.
 
 ## Phase 0 — Shared generated assets
 
-- [ ] Write `tools/generate_sprites.py` (Pillow) that produces every PNG in
+- [x] Write `tools/generate_sprites.py` (Pillow) that produces every PNG in
       the assets table of the specs (§2.7): kid idle/run×2/jump, key spin ×4,
       circuit tile, chip tile, elevator cab, door closed/open, HUD key icon,
       background props — exact sizes and palette from the spec.
