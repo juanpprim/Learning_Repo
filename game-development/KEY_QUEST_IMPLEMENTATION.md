@@ -80,7 +80,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Implement `LevelBuilder.cs`: parse the map TextAsset and construct
       tiles (merged colliders), keys, elevators, door, player, edge walls,
       fall-respawn trigger; register key count; pass bounds to the camera.
-- [ ] Implement `PlayerController.cs`: Rigidbody2D movement 5.6 u/s, jump
+- [x] Implement `PlayerController.cs`: Rigidbody2D movement 5.6 u/s, jump
       ≥ 3.5 tiles, coyote time 0.15 s, ground check, sprite-swap animations,
       jump sound, respawn with fade + boop.
 - [ ] Implement `KeyPickup.cs`: spin/bob, trigger pickup, arpeggio +
