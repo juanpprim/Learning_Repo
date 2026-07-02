@@ -35,7 +35,7 @@ bottom is the acceptance bar for calling either game finished.
       SPECS.md §2.5.
 - [x] Build `Player.tscn` + `player.gd`: move 180 px/s, jump ≥ 3.5 tiles,
       coyote time 0.15 s, sprite flip, idle/run/jump animations, jump sound.
-- [ ] Build `Key.tscn` + `key.gd`: spin animation, `body_entered` pickup,
+- [x] Build `Key.tscn` + `key.gd`: spin animation, `body_entered` pickup,
       arpeggio + sparkle particles, updates `GameState`.
 - [ ] Build `Elevator.tscn` + `elevator.gd`: `AnimatableBody2D`, sine-eased
       looping tween bottom↔top at 48 px/s with 1 s end pauses, carries the
