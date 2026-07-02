@@ -1,0 +1,25 @@
+# Copy this file to .github/workflows/ci.yml (at the repo root) to activate it.
+# Kept here as `workflow-example.yml` so it doesn't run automatically as part
+# of this learning repo's own scaffolding.
+name: ci
+
+on:
+  push:
+    paths:
+      - "mlops-production-ml/ci-cd-for-ml/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mlops-production-ml/ci-cd-for-ml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - run: ruff check .
+      - run: pytest

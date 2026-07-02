@@ -1,0 +1,4 @@
+numba>=0.60
+numpy>=1.26
+matplotlib>=3.9
+# requires an NVIDIA GPU + CUDA toolkit locally, or use Google Colab's free GPU runtime

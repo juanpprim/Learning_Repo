@@ -1,0 +1,3 @@
+confluent-kafka>=2.4
+# local broker: run via docker, e.g.
+#   docker run -p 9092:9092 apache/kafka:latest

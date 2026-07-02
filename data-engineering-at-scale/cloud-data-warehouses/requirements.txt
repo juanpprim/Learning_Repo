@@ -1,0 +1,4 @@
+google-cloud-bigquery>=3.25
+duckdb>=1.0
+# duckdb is a local stand-in if you want to practice warehouse SQL patterns
+# without a cloud account
