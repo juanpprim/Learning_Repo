@@ -44,7 +44,7 @@ bottom is the acceptance bar for calling either game finished.
       then open/green + chime + sparkles; entering loads the next level.
 - [x] Build `HUD.tscn` + `hud.gd`: one big key icon per key, grey → gold with
       a pop when collected. Icon-only, no text.
-- [ ] Build `level_builder.gd` + `Level.tscn`: construct tiles, keys,
+- [x] Build `level_builder.gd` + `Level.tscn`: construct tiles, keys,
       elevators, door, player, edge walls, fall-respawn zone, and camera
       limits from the ASCII map for the current level index.
 - [ ] Implement gentle respawn: falling below the map fades and returns the
