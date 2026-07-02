@@ -1,5 +1,7 @@
 # Full-Stack Capstone Project
 
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
+
 ## Objective
 Ship one complete, usable application that ties together earlier tracks:
 a real backend, a real frontend, and — ideally — a model or pipeline pulled

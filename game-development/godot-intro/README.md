@@ -7,6 +7,8 @@
   built-in physics.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Scenes and nodes as Godot's core building block (everything is a node tree).
 - Signals for decoupled event handling (e.g. `body_entered` on an `Area2D`).
 - `_ready()` and `_process(delta)` / `_physics_process(delta)` lifecycle methods.

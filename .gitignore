@@ -1,0 +1,16 @@
+# notebook execution artifacts
+mlruns/
+mlflow.db
+*.duckdb
+warehouse.db
+raw_orders.csv
+evidently_drift_report.html
+dags/
+dbt_project/
+feature_repo/data/
+app.db
+
+# python / node
+__pycache__/
+.ipynb_checkpoints/
+node_modules/

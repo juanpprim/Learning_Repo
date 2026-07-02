@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intro to Godot — Key Concepts</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--line:#262b38;--text:#e6e8ee;--muted:#9aa3b5;--accent:#7aa2ff;--accent2:#58c9a4;--warn:#e8a851}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;padding:32px 18px 60px}
+.wrap{max-width:880px;margin:0 auto}
+header{margin-bottom:28px}
+h1{font-size:1.7rem;margin-bottom:6px}
+.subtitle{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none}
+.chip:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:22px;animation:fadeup .6s ease both}
+.card h2{font-size:1.15rem;margin-bottom:10px;color:#fff}
+.card p{margin-bottom:10px}
+.card ul{margin:0 0 10px 20px}
+.card li{margin-bottom:6px}
+code{background:#0d0f15;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.85em;color:#c3d0ff}
+.caption{color:var(--muted);font-size:.8rem;margin-top:8px;text-align:center}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.anim{margin:18px 0 4px;overflow-x:auto;padding:4px 2px}
+.flow-stages{display:flex;gap:8px}
+.flow-stage{flex:1;text-align:center;font-size:.78rem;border:1px solid var(--line);border-radius:8px;padding:8px 6px;background:#111420;min-width:72px}
+.flow-track{position:relative;height:16px;margin-top:8px;border-top:2px dashed var(--line)}
+.flow-dot{position:absolute;top:-9px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:packet 3.6s linear infinite}
+@keyframes packet{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.cycle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cycle-step{border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.8rem;background:#111420;animation:steppulse var(--dur) linear infinite;animation-delay:var(--del)}
+.cycle-arrow{color:var(--muted)}
+@keyframes steppulse{0%,13%{background:#233258;border-color:var(--accent);color:#fff}17%,100%{background:#111420;border-color:var(--line);color:var(--text)}}
+.split{display:flex;align-items:center}
+.split-src{border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:.8rem;background:#182036;white-space:nowrap}
+.split-rows{flex:1;display:flex;flex-direction:column;gap:10px;margin-left:8px}
+.split-row{display:flex;align-items:center;gap:8px}
+.split-line{position:relative;flex:1;height:2px;background:var(--line);min-width:60px}
+.split-pkt{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:packet 2.8s linear infinite;animation-delay:var(--del)}
+.split-dst{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.75rem;background:#111420;white-space:nowrap}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:.78rem}
+.bar-label{width:190px;color:var(--muted);text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#0d0f15;border-radius:6px;height:16px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;background:var(--accent);transform-origin:left;animation:grow 3s ease-in-out infinite}
+.bar-fill.alt{background:var(--accent2)}
+.bar-fill.warn{background:var(--warn)}
+@keyframes grow{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.versus .v-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:#111420}
+.versus h4{font-size:.85rem;margin-bottom:8px;color:var(--accent)}
+.versus .v-card:last-child h4{color:var(--accent2)}
+.versus ul{margin-left:18px;font-size:.82rem}
+@media(max-width:640px){.versus{grid-template-columns:1fr}.bar-label{width:110px}}
+footer{color:var(--muted);font-size:.8rem;margin-top:30px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Intro to Godot</h1>
+<p class="subtitle">Scenes, nodes, signals and the engine lifecycle.</p>
+<nav class="chips"><a class="chip" href="#c0">Everything is a node; scenes are trees</a><a class="chip" href="#c1">Signals: decoupled events</a><a class="chip" href="#c2">The lifecycle: _ready, _process, _physics_process</a><a class="chip" href="#c3">CharacterBody2D &amp; move_and_slide</a><a class="chip" href="#c4">@export: code that designers can tune</a></nav>
+</header>
+<section class="card" id="c0" style="animation-delay:0.00s"><h2>Everything is a node; scenes are trees</h2><p>Godot's one big idea: a game is a <strong>tree of nodes</strong>, where each node does one thing
+(<code>Sprite2D</code> draws, <code>CollisionShape2D</code> defines a hitbox, <code>Camera2D</code> views). A
+<strong>scene</strong> is a saved subtree — a Player scene, a Bullet scene, a Level scene — and scenes
+<em>instance</em> other scenes, giving you composition all the way down. Children inherit their parent's transform:
+move the Player node and its sprite, collider and camera all follow.</p><div class="anim"><div class="split"><div class="split-src">Player.tscn (scene root)</div><div class="split-rows"><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.00s"></div></div><div class="split-dst">CharacterBody2D</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.45s"></div></div><div class="split-dst">└ Sprite2D (visual)</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.90s"></div></div><div class="split-dst">└ CollisionShape2D (hitbox)</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:1.35s"></div></div><div class="split-dst">└ Camera2D (follows)</div></div></div></div><div class="caption">Compose behavior by composing nodes — inheritance rarely needed</div></div></section><section class="card" id="c1" style="animation-delay:0.08s"><h2>Signals: decoupled events</h2><p>Signals are Godot's observer pattern. Nodes <em>emit</em> ("body_entered", "timeout", "pressed") and
+other nodes <em>connect</em> handlers — the emitter never knows who's listening. This is what keeps scenes reusable: a Coin
+emits <code>collected</code>; whether the HUD, a sound player, or a quest system listens is not the Coin's problem.
+The rule of thumb the Godot community repeats: <strong>call down, signal up</strong> — parents call child methods directly;
+children communicate upward only via signals.</p><div class="anim"><div class="flow-stages"><div class="flow-stage">Area2D detects overlap</div><div class="flow-stage">emits body_entered(body)</div><div class="flow-stage">connected handler runs: _on_body_entered</div></div><div class="flow-track"><div class="flow-dot"></div></div><div class="caption">The emitter is reusable anywhere because it names no receivers</div></div></section><section class="card" id="c2" style="animation-delay:0.16s"><h2>The lifecycle: _ready, _process, _physics_process</h2><ul>
+<li><code>_ready()</code> — runs once when the node enters the tree (children are ready before parents). Setup goes here.</li>
+<li><code>_process(delta)</code> — every rendered frame, variable rate. For visuals, UI, camera logic. <code>delta</code>
+is Godot handing you the dt from the pygame subtopic for free.</li>
+<li><code>_physics_process(delta)</code> — fixed rate (60Hz default). All movement and collision goes here so physics is
+deterministic and frame-rate independent.</li>
+</ul>
+<p>Same loop as pygame — the engine just runs it for you and calls your hooks.</p><div class="anim"><div class="cycle"><div class="cycle-step" style="--dur:5.2s;--del:0.0s">_ready (once)</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:1.3s">_physics_process (fixed 60Hz)</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:2.6s">_process (per frame)</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:3.9s">render</div><span class="cycle-arrow">&#8635;</span></div></div></section><section class="card" id="c3" style="animation-delay:0.24s"><h2>CharacterBody2D &amp; move_and_slide</h2><p>Godot ships the movement code you'd otherwise hand-roll. On a <code>CharacterBody2D</code>, set the
+<code>velocity</code> property (pixels/sec) and call <code>move_and_slide()</code>: the engine moves the body, detects
+collisions against physics layers, and slides along walls instead of sticking. Helpers like
+<code>is_on_floor()</code> make platformer logic trivial. Compare with the pygame subtopic where you built collision
+response manually — engines earn their complexity by packaging exactly this kind of hard-to-get-right code.</p></section><section class="card" id="c4" style="animation-delay:0.32s"><h2>@export: code that designers can tune</h2><p>Prefixing a variable with <code>@export</code> surfaces it in the editor's Inspector:
+<code>@export var speed := 300.0</code> becomes an editable field on every instance of the scene. This separates
+<em>mechanics</em> (code) from <em>tuning</em> (data) — you can give three enemy instances different speeds without three
+scripts, and non-programmers can balance the game. It's the same design/config split you know from ML: hyperparameters
+in config, algorithm in code.</p></section>
+<footer>Part of the Learning Repo &middot; open the folder README for the checklist &amp; mini-project</footer>
+</div>
+</body>
+</html>

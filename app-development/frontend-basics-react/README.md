@@ -6,6 +6,8 @@
 - Handle forms and user input, and lift state up between components.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Function components + hooks (`useState`, `useEffect`) — the modern React model.
 - Props (parent -> child data flow) vs. state (component-owned, triggers re-render).
 - Controlled inputs for forms.

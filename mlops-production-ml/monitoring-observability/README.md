@@ -8,6 +8,8 @@
   fairness/quality degradation).
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Data drift vs. concept drift vs. label drift.
 - Statistical drift tests: population stability index (PSI), KL divergence,
   Kolmogorov-Smirnov test.

@@ -7,6 +7,8 @@
 - Recognize when distributed compute is worth the overhead vs. a single beefy machine.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Dask DataFrame/Array as chunked, lazy versions of pandas/NumPy.
 - Task graphs and the Dask dashboard for visualizing execution.
 - Ray tasks (`@ray.remote` functions) vs. actors (stateful remote objects).

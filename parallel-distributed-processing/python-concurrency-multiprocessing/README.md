@@ -8,6 +8,8 @@
 - Pick the right tool for a given workload and justify the choice.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Global Interpreter Lock (GIL): what it does and doesn't block.
 - `threading` vs. `multiprocessing` vs. `asyncio` — CPU-bound vs. I/O-bound.
 - Process pools (`ProcessPoolExecutor`) and serialization overhead (pickling).

@@ -7,6 +7,8 @@
 - Retrieve point-in-time-correct historical features for training.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Offline store (for training, historical/batch) vs. online store (for serving, low-latency).
 - Entities, feature views, point-in-time joins (avoiding label leakage).
 - Materialization: pushing offline feature data into the online store.

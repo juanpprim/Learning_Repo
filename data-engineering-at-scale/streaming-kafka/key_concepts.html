@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streaming with Kafka — Key Concepts</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--line:#262b38;--text:#e6e8ee;--muted:#9aa3b5;--accent:#7aa2ff;--accent2:#58c9a4;--warn:#e8a851}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;padding:32px 18px 60px}
+.wrap{max-width:880px;margin:0 auto}
+header{margin-bottom:28px}
+h1{font-size:1.7rem;margin-bottom:6px}
+.subtitle{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none}
+.chip:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:22px;animation:fadeup .6s ease both}
+.card h2{font-size:1.15rem;margin-bottom:10px;color:#fff}
+.card p{margin-bottom:10px}
+.card ul{margin:0 0 10px 20px}
+.card li{margin-bottom:6px}
+code{background:#0d0f15;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.85em;color:#c3d0ff}
+.caption{color:var(--muted);font-size:.8rem;margin-top:8px;text-align:center}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.anim{margin:18px 0 4px;overflow-x:auto;padding:4px 2px}
+.flow-stages{display:flex;gap:8px}
+.flow-stage{flex:1;text-align:center;font-size:.78rem;border:1px solid var(--line);border-radius:8px;padding:8px 6px;background:#111420;min-width:72px}
+.flow-track{position:relative;height:16px;margin-top:8px;border-top:2px dashed var(--line)}
+.flow-dot{position:absolute;top:-9px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:packet 3.6s linear infinite}
+@keyframes packet{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.cycle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cycle-step{border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.8rem;background:#111420;animation:steppulse var(--dur) linear infinite;animation-delay:var(--del)}
+.cycle-arrow{color:var(--muted)}
+@keyframes steppulse{0%,13%{background:#233258;border-color:var(--accent);color:#fff}17%,100%{background:#111420;border-color:var(--line);color:var(--text)}}
+.split{display:flex;align-items:center}
+.split-src{border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:.8rem;background:#182036;white-space:nowrap}
+.split-rows{flex:1;display:flex;flex-direction:column;gap:10px;margin-left:8px}
+.split-row{display:flex;align-items:center;gap:8px}
+.split-line{position:relative;flex:1;height:2px;background:var(--line);min-width:60px}
+.split-pkt{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:packet 2.8s linear infinite;animation-delay:var(--del)}
+.split-dst{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.75rem;background:#111420;white-space:nowrap}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:.78rem}
+.bar-label{width:190px;color:var(--muted);text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#0d0f15;border-radius:6px;height:16px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;background:var(--accent);transform-origin:left;animation:grow 3s ease-in-out infinite}
+.bar-fill.alt{background:var(--accent2)}
+.bar-fill.warn{background:var(--warn)}
+@keyframes grow{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.versus .v-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:#111420}
+.versus h4{font-size:.85rem;margin-bottom:8px;color:var(--accent)}
+.versus .v-card:last-child h4{color:var(--accent2)}
+.versus ul{margin-left:18px;font-size:.82rem}
+@media(max-width:640px){.versus{grid-template-columns:1fr}.bar-label{width:110px}}
+footer{color:var(--muted);font-size:.8rem;margin-top:30px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Streaming with Kafka</h1>
+<p class="subtitle">Topics, partitions, consumer groups and the guarantees between them.</p>
+<nav class="chips"><a class="chip" href="#c0">The log: topics &amp; partitions</a><a class="chip" href="#c1">Consumer groups &amp; offsets</a><a class="chip" href="#c2">Delivery guarantees</a><a class="chip" href="#c3">Windowing: aggregating the infinite</a><a class="chip" href="#c4">Streaming vs. batch</a></nav>
+</header>
+<section class="card" id="c0" style="animation-delay:0.00s"><h2>The log: topics &amp; partitions</h2><p>A Kafka <strong>topic</strong> is an append-only log split into <strong>partitions</strong>. Producers
+append; consumers read at their own pace. Two crucial properties: ordering is guaranteed <em>only within a partition</em>
+(the same key always routes to the same partition — so use e.g. <code>user_id</code> as key when per-user order matters),
+and partition count is the ceiling on consumer parallelism.</p><div class="anim"><div class="split"><div class="split-src">producers (key → partition)</div><div class="split-rows"><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.00s"></div></div><div class="split-dst">partition 0 — ordered log</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.45s"></div></div><div class="split-dst">partition 1 — ordered log</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.90s"></div></div><div class="split-dst">partition 2 — ordered log</div></div></div></div><div class="caption">Kafka is &#x27;just&#x27; distributed append-only logs with smart routing</div></div></section><section class="card" id="c1" style="animation-delay:0.08s"><h2>Consumer groups &amp; offsets</h2><p>A <strong>consumer group</strong> is a set of consumers sharing a group id; Kafka assigns each partition
+to exactly one consumer in the group, so adding consumers scales throughput — up to the partition count. Each group tracks
+its own <strong>offset</strong> (position) per partition, committed back to Kafka. This is why Kafka is pub/sub <em>and</em>
+a queue: different groups each get all messages; consumers within a group split them. When members join or leave, a
+<strong>rebalance</strong> reassigns partitions — brief pauses during rebalancing are normal.</p><div class="anim"><div class="split"><div class="split-src">topic (3 partitions)</div><div class="split-rows"><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.00s"></div></div><div class="split-dst">group A / consumer 1 ← p0, p1</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.45s"></div></div><div class="split-dst">group A / consumer 2 ← p2</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.90s"></div></div><div class="split-dst">group B / consumer 1 ← p0, p1, p2 (all)</div></div></div></div><div class="caption">Groups are independent cursors over the same log</div></div></section><section class="card" id="c2" style="animation-delay:0.16s"><h2>Delivery guarantees</h2><p>Guarantees come from two knobs: producer acknowledgments and when consumers commit offsets.</p>
+<ul>
+<li><strong>At-most-once</strong> — commit before processing: crash loses the in-flight message. Fine for metrics ticks.</li>
+<li><strong>At-least-once</strong> — commit after processing: crash replays messages, so consumers must be
+<em>idempotent</em> (processing twice = processing once). The pragmatic default for data pipelines.</li>
+<li><strong>Exactly-once</strong> — idempotent producers + transactions; real but costly and mainly within Kafka-to-Kafka
+pipelines. In practice: at-least-once + idempotent sinks.</li>
+</ul>
+<p>Producer side: <code>acks=all</code> waits for replicas — durable but slower; <code>acks=0</code> is fire-and-forget.</p><div class="anim"><div class="cycle"><div class="cycle-step" style="--dur:5.2s;--del:0.0s">read message</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:1.3s">process</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:2.6s">commit offset</div><span class="cycle-arrow">&rarr;</span><div class="cycle-step" style="--dur:5.2s;--del:3.9s">crash here? → replay</div><span class="cycle-arrow">&#8635;</span></div><div class="caption">At-least-once: the replay window is between &#x27;process&#x27; and &#x27;commit&#x27;</div></div></section><section class="card" id="c3" style="animation-delay:0.24s"><h2>Windowing: aggregating the infinite</h2><p>A stream never ends, so "count per event type" is meaningless without a time boundary.
+<strong>Tumbling windows</strong> tile time into non-overlapping chunks (00:00–00:10, 00:10–00:20); <strong>sliding
+windows</strong> overlap (last 10 min, every 1 min); <strong>session windows</strong> close after a gap of inactivity.
+The deep complication: <em>event time</em> (when it happened) vs. <em>processing time</em> (when you saw it) — late-arriving
+events belong to windows you may have already emitted, which is what watermarks manage in Flink/Spark Streaming.</p><div class="anim"><div class="flow-stages"><div class="flow-stage">events arrive</div><div class="flow-stage">assign to window [t, t+10s)</div><div class="flow-stage">aggregate in window state</div><div class="flow-stage">window closes → emit</div></div><div class="flow-track"><div class="flow-dot"></div></div><div class="caption">A tumbling window: state accumulates, then flushes at the boundary</div></div></section><section class="card" id="c4" style="animation-delay:0.32s"><h2>Streaming vs. batch</h2><div class="anim"><div class="versus"><div class="v-card"><h4>Batch (cron + files/warehouse)</h4><ul><li>Simple to build, test, backfill and reason about</li><li>Latency = schedule interval (minutes–hours)</li><li>Right when consumers only need periodic freshness</li></ul></div><div class="v-card"><h4>Streaming (Kafka)</h4><ul><li>Seconds of latency; events processed as they occur</li><li>Decouples producers from consumers (buffering, replay)</li><li>Operationally heavier: rebalances, ordering, duplicates</li></ul></div></div><div class="caption">Start batch; move a pipeline to streaming when latency requirements force you to</div></div></section>
+<footer>Part of the Learning Repo &middot; open the folder README for the checklist &amp; mini-project</footer>
+</div>
+</body>
+</html>

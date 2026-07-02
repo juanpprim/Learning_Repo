@@ -6,10 +6,11 @@ track contains **subtopics**, and every subtopic follows the same pattern:
 
 ```
 <track>/<subtopic>/
-  README.md        # objectives, key concepts, resources, checklist, mini-project
-  notebooks/        # starter notebook(s) to work through hands-on
-                     # (or a src/ starter script for non-notebook topics)
-  requirements.txt  # key libraries for that subtopic
+  README.md           # objectives, key concepts, resources, checklist, mini-project
+  key_concepts.html   # animated deep-dive on the key concepts — open in a browser
+  notebooks/          # completed walkthrough notebook(s) to run and extend
+                      # (or a src/ starter script for non-notebook topics)
+  requirements.txt    # key libraries for that subtopic
 ```
 
 Work through a subtopic by reading its README, ticking off the checklist as

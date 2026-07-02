@@ -6,6 +6,8 @@
 - Manage simple game state (menu -> playing -> game over).
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - The game loop and frame rate (`clock.tick(FPS)`), and why it must run at a
   consistent rate regardless of hardware speed.
 - `pygame.sprite.Sprite` / `Group` for organizing and updating game objects.

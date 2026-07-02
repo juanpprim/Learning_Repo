@@ -8,6 +8,8 @@
   and why they matter for data pipelines.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Topics and partitions as the unit of parallelism and ordering.
 - Offsets and consumer groups (how multiple consumers share a topic).
 - Producer acks (`acks=0/1/all`) and idempotent producers.

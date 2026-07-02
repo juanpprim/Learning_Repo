@@ -7,6 +7,8 @@
 - Use sensors/operators to wait on and trigger external systems.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - DAG, task, operator (PythonOperator/BashOperator/etc.), task dependencies (`>>`).
 - Scheduling intervals, `catchup`, and backfilling historical runs.
 - Idempotency: why tasks must be safely re-runnable.

@@ -8,6 +8,8 @@
   parallelism, and when each is needed.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - `DistributedDataParallel` (DDP): replica per process, gradient all-reduce.
 - Process groups, world size, rank, local rank.
 - `DistributedSampler` to shard data correctly across processes (avoid duplication).

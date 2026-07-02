@@ -6,6 +6,8 @@
 - Add data tests (uniqueness, not-null, relationships) and generate docs/lineage.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Models as `SELECT` statements; dbt compiles + runs them as views/tables.
 - `ref()` and `source()` for building a dependency graph between models.
 - Materializations: view, table, incremental, ephemeral.

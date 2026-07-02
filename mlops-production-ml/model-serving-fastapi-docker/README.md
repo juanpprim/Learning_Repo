@@ -7,6 +7,8 @@
 - Understand sync vs. async serving and basic load/latency tradeoffs.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Pydantic models for request validation and response typing.
 - Loading a model once at startup (not per-request).
 - Dockerfile layering, `.dockerignore`, multi-stage builds for smaller images.

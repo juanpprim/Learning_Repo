@@ -7,6 +7,8 @@
 - Recognize and fix common performance issues: shuffles, skew, wrong partitioning.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Lazy transformations vs. actions (`.filter()` vs. `.count()`).
 - Partitions and shuffles; `repartition` vs. `coalesce`.
 - Joins: broadcast join vs. shuffle join, and when Spark picks each.

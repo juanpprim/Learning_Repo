@@ -8,6 +8,8 @@
   a baseline on a held-out set.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - GitHub Actions workflow syntax (`on`, `jobs`, `steps`).
 - Caching dependencies in CI for speed.
 - Testing data pipelines and models (not just application code): schema checks,

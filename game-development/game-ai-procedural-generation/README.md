@@ -7,6 +7,8 @@
   conceptual level.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - A* search: heuristics, open/closed sets, and why it beats plain Dijkstra for
   games (goal-directed search).
 - Grid vs. navmesh pathfinding.

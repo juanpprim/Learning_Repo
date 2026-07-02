@@ -8,6 +8,8 @@
   affects cost.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Storage/compute separation; partitioning and clustering to prune scanned data.
 - Window functions (`ROW_NUMBER`, `LAG/LEAD`, running aggregates) for analytics.
 - Materialized views vs. scheduled queries for pre-aggregation.

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature Stores — Key Concepts</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--line:#262b38;--text:#e6e8ee;--muted:#9aa3b5;--accent:#7aa2ff;--accent2:#58c9a4;--warn:#e8a851}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;padding:32px 18px 60px}
+.wrap{max-width:880px;margin:0 auto}
+header{margin-bottom:28px}
+h1{font-size:1.7rem;margin-bottom:6px}
+.subtitle{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none}
+.chip:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:22px;animation:fadeup .6s ease both}
+.card h2{font-size:1.15rem;margin-bottom:10px;color:#fff}
+.card p{margin-bottom:10px}
+.card ul{margin:0 0 10px 20px}
+.card li{margin-bottom:6px}
+code{background:#0d0f15;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.85em;color:#c3d0ff}
+.caption{color:var(--muted);font-size:.8rem;margin-top:8px;text-align:center}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.anim{margin:18px 0 4px;overflow-x:auto;padding:4px 2px}
+.flow-stages{display:flex;gap:8px}
+.flow-stage{flex:1;text-align:center;font-size:.78rem;border:1px solid var(--line);border-radius:8px;padding:8px 6px;background:#111420;min-width:72px}
+.flow-track{position:relative;height:16px;margin-top:8px;border-top:2px dashed var(--line)}
+.flow-dot{position:absolute;top:-9px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:packet 3.6s linear infinite}
+@keyframes packet{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.cycle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cycle-step{border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.8rem;background:#111420;animation:steppulse var(--dur) linear infinite;animation-delay:var(--del)}
+.cycle-arrow{color:var(--muted)}
+@keyframes steppulse{0%,13%{background:#233258;border-color:var(--accent);color:#fff}17%,100%{background:#111420;border-color:var(--line);color:var(--text)}}
+.split{display:flex;align-items:center}
+.split-src{border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:.8rem;background:#182036;white-space:nowrap}
+.split-rows{flex:1;display:flex;flex-direction:column;gap:10px;margin-left:8px}
+.split-row{display:flex;align-items:center;gap:8px}
+.split-line{position:relative;flex:1;height:2px;background:var(--line);min-width:60px}
+.split-pkt{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:packet 2.8s linear infinite;animation-delay:var(--del)}
+.split-dst{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.75rem;background:#111420;white-space:nowrap}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:.78rem}
+.bar-label{width:190px;color:var(--muted);text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#0d0f15;border-radius:6px;height:16px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;background:var(--accent);transform-origin:left;animation:grow 3s ease-in-out infinite}
+.bar-fill.alt{background:var(--accent2)}
+.bar-fill.warn{background:var(--warn)}
+@keyframes grow{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.versus .v-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:#111420}
+.versus h4{font-size:.85rem;margin-bottom:8px;color:var(--accent)}
+.versus .v-card:last-child h4{color:var(--accent2)}
+.versus ul{margin-left:18px;font-size:.82rem}
+@media(max-width:640px){.versus{grid-template-columns:1fr}.bar-label{width:110px}}
+footer{color:var(--muted);font-size:.8rem;margin-top:30px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Feature Stores</h1>
+<p class="subtitle">One feature definition, consistent between training and serving.</p>
+<nav class="chips"><a class="chip" href="#c0">The problem: training/serving skew</a><a class="chip" href="#c1">Offline store vs. online store</a><a class="chip" href="#c2">Point-in-time correctness</a><a class="chip" href="#c3">Materialization</a><a class="chip" href="#c4">The vocabulary: entities &amp; feature views</a></nav>
+</header>
+<section class="card" id="c0" style="animation-delay:0.00s"><h2>The problem: training/serving skew</h2><p>The training pipeline computes <code>avg_spend_30d</code> in SQL; the serving service reimplements it in
+Python. The two drift apart — different null handling, different time windows — and the model quietly receives features
+distributed differently from what it trained on. A feature store fixes this by making the <strong>definition</strong> the
+single source of truth that both paths consume.</p><div class="anim"><div class="versus"><div class="v-card"><h4>Without a feature store</h4><ul><li>Feature logic duplicated in 2+ codebases</li><li>Skew appears silently, found months later</li><li>Every team rebuilds the same features</li></ul></div><div class="v-card"><h4>With a feature store</h4><ul><li>Define once; training and serving both read it</li><li>Consistent transformations by construction</li><li>Features become a shared, discoverable catalog</li></ul></div></div></div></section><section class="card" id="c1" style="animation-delay:0.08s"><h2>Offline store vs. online store</h2><p>The same feature values live in two places optimized for opposite access patterns. The
+<strong>offline store</strong> (parquet files, warehouse tables) holds full history for building training sets — huge scans,
+latency irrelevant. The <strong>online store</strong> (Redis, DynamoDB, SQLite locally) holds only the <em>latest</em> value
+per entity for serving — single-key reads in single-digit milliseconds.</p><div class="anim"><div class="split"><div class="split-src">feature definitions</div><div class="split-rows"><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.00s"></div></div><div class="split-dst">offline store — full history, batch scans (training)</div></div><div class="split-row"><div class="split-line"><div class="split-pkt" style="--del:0.45s"></div></div><div class="split-dst">online store — latest value, ms lookups (serving)</div></div></div></div><div class="caption">One definition feeding both stores</div></div></section><section class="card" id="c2" style="animation-delay:0.16s"><h2>Point-in-time correctness</h2><p>The subtle killer when building training sets. For a training example labeled at time T, you must join
+the feature values <em>as they were at T</em> — using today's values leaks the future into training, inflating offline
+metrics that then collapse in production. Feast's <code>get_historical_features</code> does this as-of join for every row
+automatically; the notebook contrasts it with a naive (leaky) join.</p><div class="anim"><div class="flow-stages"><div class="flow-stage">label event at time T</div><div class="flow-stage">look back: features as-of T</div><div class="flow-stage">training row</div><div class="flow-stage">no future leakage</div></div><div class="flow-track"><div class="flow-dot"></div></div><div class="caption">Each training row gets the world as it looked at its own timestamp</div></div></section><section class="card" id="c3" style="animation-delay:0.24s"><h2>Materialization</h2><p>Materialization is the scheduled job that copies the freshest feature values from offline to online:
+<code>feast materialize</code> computes latest-per-entity and writes them to the online store. Its cadence sets your
+<strong>feature freshness</strong> — hourly materialization means serving reads features up to an hour stale, which is fine
+for slow features (30-day averages) and wrong for fast ones (items-in-cart), which need a streaming push path instead.</p><div class="anim"><div class="flow-stages"><div class="flow-stage">offline history</div><div class="flow-stage">latest per entity</div><div class="flow-stage">write to online store</div><div class="flow-stage">serve at ms latency</div></div><div class="flow-track"><div class="flow-dot"></div></div></div></section><section class="card" id="c4" style="animation-delay:0.32s"><h2>The vocabulary: entities &amp; feature views</h2><ul>
+<li><strong>Entity</strong> — the business object features describe (<code>driver</code>, <code>user</code>), with a join key (<code>driver_id</code>).</li>
+<li><strong>Feature view</strong> — a named group of features from one source with a TTL, attached to entities.</li>
+<li><strong>Feature service</strong> — a versioned bundle of feature views that one model consumes; models depend on the service, not raw views.</li>
+<li><strong>TTL</strong> — how far back a point-in-time lookup may reach before the value is considered too stale to use.</li>
+</ul></section>
+<footer>Part of the Learning Repo &middot; open the folder README for the checklist &amp; mini-project</footer>
+</div>
+</body>
+</html>

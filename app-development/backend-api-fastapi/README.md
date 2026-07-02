@@ -7,6 +7,8 @@
 - Add persistence with an ORM (SQLModel/SQLAlchemy) instead of in-memory state.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Path/query/body parameters and Pydantic models for validation.
 - Dependency injection (`Depends`) for shared logic (DB sessions, auth).
 - CRUD patterns and mapping them to REST routes.

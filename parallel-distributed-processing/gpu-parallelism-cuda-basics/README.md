@@ -8,6 +8,8 @@
 - Understand memory transfer cost (host <-> device) as the usual bottleneck.
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Threads, blocks, grids; how a kernel maps work across the GPU.
 - Host memory vs. device memory, and the cost of transferring data between them.
 - Embarrassingly parallel vs. inherently sequential workloads (Amdahl's law intuition).

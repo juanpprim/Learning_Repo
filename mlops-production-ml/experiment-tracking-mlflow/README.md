@@ -9,6 +9,8 @@
   stages (`Staging` -> `Production`).
 
 ## Key concepts
+
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
 - Tracking server vs. local file store (`mlruns/`) vs. remote backend (Postgres + S3/GCS).
 - Runs, experiments, params, metrics, tags, artifacts.
 - Autologging (`mlflow.sklearn.autolog()`, `mlflow.pytorch.autolog()`) vs. manual logging.
