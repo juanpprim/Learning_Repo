@@ -93,7 +93,7 @@ bottom is the acceptance bar for calling either game finished.
       chime + sparkles; trigger loads the next scene.
 - [x] Implement `HudController.cs`: icon-only key row, grey → gold pop on
       collect.
-- [ ] Implement `CameraFollow.cs`: smooth follow clamped to level bounds,
+- [x] Implement `CameraFollow.cs`: smooth follow clamped to level bounds,
       background `#0e1726`.
 - [ ] Create the four scenes (`Level1..3`, `Celebration`) with only camera +
       Bootstrap + HUD canvas each, and add them to Build Settings.
