@@ -110,9 +110,17 @@ bottom is the acceptance bar for calling either game finished.
 
 ## Phase 3 — Wrap-up
 
-- [ ] Update `game-development/README.md` entries if folder contents changed.
-- [ ] Verify the Definition of Done below for **each** game, item by item.
-- [ ] Commit and push everything to the designated branch.
+- [x] Update `game-development/README.md` entries if folder contents changed.
+- [x] Verify the Definition of Done below for **each** game, item by item.
+      (Verified automatically as far as the environment allows: scripts
+      parse/lint clean, scene and resource references resolve, both engines'
+      levels are completable twice with no dead ends, maps identical in all
+      four places, no hazard/lives/game-over concepts in any game code,
+      16 sprites + 5 sounds present per project, inputs limited to
+      arrows/WASD + space. DoD point 1 — "opens and runs with one click" —
+      needs a human with the Godot/Unity editors installed; everything
+      those editors consume has been machine-checked.)
+- [x] Commit and push everything to the designated branch.
 
 ## Definition of Done (applies to each game independently)
 
