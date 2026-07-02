@@ -51,7 +51,12 @@ bottom is the acceptance bar for calling either game finished.
       kid to the last ground position with a soft boop — no other effect.
 - [x] Build `Celebration.tscn`: confetti, big kid sprite, fanfare, icon-only
       replay that loops back to Level 1.
-- [ ] Playtest pass: complete Levels 1→2→3→celebration→loop twice in a row.
+- [x] Playtest pass: complete Levels 1→2→3→celebration→loop twice in a row.
+      (Done via `tools/simulate_playthrough.py` — an automated playthrough
+      using the project's real physics constants and maps — because the
+      Godot editor cannot run in the build environment. It caught and fixed
+      a too-wide jump in Level 2. A quick human playtest in the editor is
+      still recommended.)
 
 ## Phase 2 — Unity game (`key-quest-unity/`)
 
