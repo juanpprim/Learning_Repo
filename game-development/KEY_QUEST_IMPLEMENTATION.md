@@ -67,8 +67,10 @@ bottom is the acceptance bar for calling either game finished.
       (Build scene list lands with the scenes item; jump keys W/↑/Space are
       read as `KeyCode`s in `PlayerController` so no `InputManager.asset`
       edit is needed — Unity regenerates default axes for Horizontal.)
-- [ ] Add `Assets/Levels/level1..3.txt` with the 3 ASCII maps copied
+- [x] Add `Assets/Levels/level1..3.txt` with the 3 ASCII maps copied
       **verbatim** from SPECS.md §2.5.
+      (Placed under `Assets/Resources/Levels/` so scripts load them via
+      `Resources.Load` with no hand-wired scene references.)
 - [ ] Import generated sprites (Pixels Per Unit = 32, Point filter, no
       compression) and audio.
 - [ ] Implement `GameManager.cs`: singleton, key counters, respawn point,
