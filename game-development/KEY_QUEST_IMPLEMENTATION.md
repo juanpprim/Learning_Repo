@@ -16,7 +16,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Write `tools/generate_audio.py` that produces the five WAVs (jump, key
       arpeggio, door chime, win fanfare, respawn boop) as short chiptune-style
       waveforms.
-- [ ] Run both scripts; commit the scripts and copy the generated files into
+- [x] Run both scripts; commit the scripts and copy the generated files into
       `key-quest-godot/assets/` and `key-quest-unity/Assets/Sprites|Audio/`.
 - [ ] Eyeball every sprite at 4× zoom: bright, high-contrast, readable
       silhouettes; kid looks friendly; key reads as a key.
