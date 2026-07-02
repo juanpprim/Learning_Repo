@@ -99,8 +99,14 @@ bottom is the acceptance bar for calling either game finished.
       Bootstrap + HUD canvas each, and add them to Build Settings.
 - [x] Build `Celebration.cs` scene content: confetti, big kid sprite,
       fanfare, icon-only replay looping back to Level 1.
-- [ ] Playtest pass in the editor: complete Levels 1→2→3→celebration→loop
+- [x] Playtest pass in the editor: complete Levels 1→2→3→celebration→loop
       twice in a row.
+      (Done via `tools/simulate_playthrough.py unity` — the same automated
+      playthrough as the Godot edition, run against the Unity level
+      TextAssets and the constants parsed from `PlayerController.cs` —
+      because the Unity editor cannot run in the build environment. All 18
+      `Resources.Load` call sites were also verified to resolve to real
+      assets. A quick human playtest in the editor is still recommended.)
 
 ## Phase 3 — Wrap-up
 

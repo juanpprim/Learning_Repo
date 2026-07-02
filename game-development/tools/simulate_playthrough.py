@@ -23,24 +23,38 @@ import sys
 from pathlib import Path
 
 GODOT = Path(__file__).resolve().parent.parent / "key-quest-godot"
+UNITY = Path(__file__).resolve().parent.parent / "key-quest-unity"
 
 SOLID = {"#", "="}
 
 
-def load_maps() -> list[list[str]]:
-    text = (GODOT / "scripts" / "levels.gd").read_text()
-    blocks = re.findall(r'"""\n(.*?)"""', text, re.S)
-    assert len(blocks) == 3, "expected 3 maps in levels.gd"
-    return [b.strip("\n").split("\n") for b in blocks]
+def load_maps(engine: str) -> list[list[str]]:
+    if engine == "godot":
+        text = (GODOT / "scripts" / "levels.gd").read_text()
+        blocks = re.findall(r'"""\n(.*?)"""', text, re.S)
+        assert len(blocks) == 3, "expected 3 maps in levels.gd"
+        return [b.strip("\n").split("\n") for b in blocks]
+    levels = UNITY / "Assets" / "Resources" / "Levels"
+    return [
+        (levels / f"level{i}.txt").read_text().strip("\n").split("\n")
+        for i in (1, 2, 3)
+    ]
 
 
-def load_constants() -> tuple[float, float, float]:
-    player = (GODOT / "scripts" / "player.gd").read_text()
-    project = (GODOT / "project.godot").read_text()
-    speed = float(re.search(r"speed := (\d+)\.0", player).group(1))
-    jump_v = abs(float(re.search(r"jump_velocity := (-\d+)\.0", player).group(1)))
-    gravity = float(re.search(r"2d/default_gravity=(\d+)", project).group(1))
-    return speed, jump_v, gravity
+def load_constants(engine: str) -> tuple[float, float, float]:
+    """Returns (speed, jump velocity, gravity) in px/s and px/s^2."""
+    if engine == "godot":
+        player = (GODOT / "scripts" / "player.gd").read_text()
+        project = (GODOT / "project.godot").read_text()
+        speed = float(re.search(r"speed := (\d+)\.0", player).group(1))
+        jump_v = abs(float(re.search(r"jump_velocity := (-\d+)\.0", player).group(1)))
+        gravity = float(re.search(r"2d/default_gravity=(\d+)", project).group(1))
+        return speed, jump_v, gravity
+    player = (UNITY / "Assets" / "Scripts" / "PlayerController.cs").read_text()
+    speed = float(re.search(r"const float Speed = ([\d.]+)f", player).group(1))
+    jump_v = float(re.search(r"const float JumpVelocity = ([\d.]+)f", player).group(1))
+    gravity = float(re.search(r"const float Gravity = ([\d.]+)f", player).group(1))
+    return speed * 32, jump_v * 32, gravity * 32  # units -> px at 32 ppu
 
 
 class Level:
@@ -156,18 +170,20 @@ def playtest(rows: list[str], jump_tiles: int, reach_tiles: int, label: str) -> 
 
 
 def main() -> None:
-    speed, jump_v, gravity = load_constants()
-    jump_px = jump_v**2 / (2 * gravity)
-    air_time = 2 * jump_v / gravity
-    jump_tiles = int(jump_px // 32)          # 3 with the shipped constants
-    reach_tiles = int(speed * air_time // 32) - 1  # 4: one tile of safety margin
-    print(f"constants from project: speed={speed}, jump={jump_px:.0f}px "
-          f"({jump_px / 32:.2f} tiles), envelope used: up {jump_tiles}, across {reach_tiles}")
+    engines = sys.argv[1:] or ["godot", "unity"]
+    for engine in engines:
+        speed, jump_v, gravity = load_constants(engine)
+        jump_px = jump_v**2 / (2 * gravity)
+        air_time = 2 * jump_v / gravity
+        jump_tiles = int(jump_px // 32)          # 3 with the shipped constants
+        reach_tiles = int(speed * air_time // 32) - 1  # 4: one tile of safety margin
+        print(f"[{engine}] constants: speed={speed:.1f}px/s, jump={jump_px:.0f}px "
+              f"({jump_px / 32:.2f} tiles), envelope: up {jump_tiles}, across {reach_tiles}")
 
-    maps = load_maps()
-    for run in (1, 2):                        # completable twice in a row
-        for i, rows in enumerate(maps, 1):
-            playtest(rows, jump_tiles, reach_tiles, f"run {run} level {i}")
+        maps = load_maps(engine)
+        for run in (1, 2):                        # completable twice in a row
+            for i, rows in enumerate(maps, 1):
+                playtest(rows, jump_tiles, reach_tiles, f"{engine} run {run} level {i}")
     print("PLAYTEST PASSED: all levels completable, twice in a row")
 
 
