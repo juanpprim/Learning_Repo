@@ -85,8 +85,10 @@ bottom is the acceptance bar for calling either game finished.
       jump sound, respawn with fade + boop.
 - [x] Implement `KeyPickup.cs`: spin/bob, trigger pickup, arpeggio +
       sparkles, updates `GameManager`.
-- [ ] Implement `ElevatorMover.cs`: kinematic sine-eased ping-pong at
+- [x] Implement `ElevatorMover.cs`: kinematic sine-eased ping-pong at
       1.5 u/s with 1 s end pauses; parents the player while ridden.
+      (Carries riders by applying the cab's movement delta to their
+      rigidbody — the physics-safe equivalent of transform parenting.)
 - [ ] Implement `LevelExit.cs`: closed until `AllKeysCollected`, then open +
       chime + sparkles; trigger loads the next scene.
 - [ ] Implement `HudController.cs`: icon-only key row, grey → gold pop on
