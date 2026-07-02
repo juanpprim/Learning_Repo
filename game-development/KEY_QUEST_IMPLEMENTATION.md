@@ -83,7 +83,7 @@ bottom is the acceptance bar for calling either game finished.
 - [x] Implement `PlayerController.cs`: Rigidbody2D movement 5.6 u/s, jump
       ≥ 3.5 tiles, coyote time 0.15 s, ground check, sprite-swap animations,
       jump sound, respawn with fade + boop.
-- [ ] Implement `KeyPickup.cs`: spin/bob, trigger pickup, arpeggio +
+- [x] Implement `KeyPickup.cs`: spin/bob, trigger pickup, arpeggio +
       sparkles, updates `GameManager`.
 - [ ] Implement `ElevatorMover.cs`: kinematic sine-eased ping-pong at
       1.5 u/s with 1 s end pauses; parents the player while ridden.
