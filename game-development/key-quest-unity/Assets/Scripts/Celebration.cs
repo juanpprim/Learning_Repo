@@ -11,7 +11,7 @@ public class Celebration : MonoBehaviour
 
     void Start()
     {
-        Camera cam = Camera.main;
+        Camera cam = GameCamera.GetOrCreate();
         cam.orthographic = true;
         cam.orthographicSize = 5.0625f;
         cam.backgroundColor = BgColor;

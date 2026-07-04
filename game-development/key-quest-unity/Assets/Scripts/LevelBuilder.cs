@@ -207,7 +207,7 @@ public class LevelBuilder : MonoBehaviour
 
     void SetupCamera()
     {
-        Camera cam = Camera.main;
+        Camera cam = GameCamera.GetOrCreate();
         cam.orthographic = true;
         cam.orthographicSize = 5.0625f;  // 324 px tall view at PPU 32
         cam.backgroundColor = BgColor;

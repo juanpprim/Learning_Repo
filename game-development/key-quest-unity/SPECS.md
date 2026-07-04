@@ -339,9 +339,16 @@ identical to the Godot edition.
    modules (https://unity.com/download).
 2. Unity Hub → **Add project from disk** → select
    `game-development/key-quest-unity/`.
-3. Open `Assets/Scenes/Level1.unity` and press **Play**. Unity regenerates
-   `Library/` on first open (a few minutes); no other setup — assets are
-   committed and levels are built from the maps at runtime.
+3. **Double-click `Assets/Scenes/Level1.unity` to open it** — the Hierarchy
+   header must read "Level1", not "Untitled". Pressing Play while Unity's
+   default empty scene is open shows only a blank blue screen.
+4. Press **Play**. Unity regenerates `Library/` on first open (a few
+   minutes); no other setup — assets are committed and levels are built from
+   the maps at runtime.
+
+If a level scene is ever opened but stays blank, `AutoBoot.cs`
+(`[RuntimeInitializeOnLoadMethod]`) rebuilds it from the scene name as a
+fallback, so an empty-but-correctly-named scene still plays.
 
 ## 4. Implementation checklist
 
