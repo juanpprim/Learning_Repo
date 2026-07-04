@@ -306,8 +306,18 @@ key-quest-godot/
 1. Install Godot 4.x (https://godotengine.org/download).
 2. Open the Godot Project Manager → **Import** → select
    `game-development/key-quest-godot/project.godot`.
-3. Press **F5** (Play). No other setup: assets are committed, levels are
-   generated from the maps at runtime.
+3. The first time the project opens, the editor **imports** the committed
+   PNG/WAV assets (generating each asset's `.import` sidecar and the
+   `.godot/` cache). This is required before the game can load them.
+4. Press **F5** (Play). Levels are generated from the ASCII maps at runtime.
+
+**Running from the command line** (no editor): trigger the import once first,
+otherwise every asset load fails with "No loader found for resource":
+
+```bash
+godot --path game-development/key-quest-godot --import   # one-time import
+godot --path game-development/key-quest-godot            # then run
+```
 
 ## 4. Implementation checklist
 
