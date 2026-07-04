@@ -7,6 +7,8 @@ const TILE := 32
 const VIEW_WIDTH := 576   # 1152x648 window at 2x zoom
 const VIEW_HEIGHT := 324
 
+const Levels := preload("res://scripts/levels.gd")
+
 const PLAYER_SCENE := preload("res://scenes/Player.tscn")
 const KEY_SCENE := preload("res://scenes/Key.tscn")
 const DOOR_SCENE := preload("res://scenes/Door.tscn")

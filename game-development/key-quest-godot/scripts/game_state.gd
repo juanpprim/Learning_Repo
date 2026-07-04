@@ -4,6 +4,11 @@ extends Node
 signal key_collected(collected: int, total: int)
 signal all_keys_collected
 
+# Preloaded explicitly (rather than relying on the "Levels" class_name)
+# because this script is an autoload: it's parsed at boot, before Godot has
+# necessarily finished scanning the project for global class_name scripts.
+const Levels := preload("res://scripts/levels.gd")
+
 const LEVEL_SCENE := "res://scenes/Level.tscn"
 const CELEBRATION_SCENE := "res://scenes/Celebration.tscn"
 
