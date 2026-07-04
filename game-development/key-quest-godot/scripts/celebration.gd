@@ -15,7 +15,9 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	var pressed_key := event is InputEventKey and event.pressed
-	var clicked := event is InputEventMouseButton and event.pressed
-	if pressed_key or clicked:
+	# Any key press or mouse click replays from Level 1. Cast explicitly so
+	# the parser can see the `.pressed` property (InputEvent has no `pressed`).
+	if event is InputEventKey and (event as InputEventKey).pressed:
+		GameState.restart()
+	elif event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
 		GameState.restart()

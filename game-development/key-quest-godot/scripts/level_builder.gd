@@ -54,6 +54,11 @@ func _build_tiles(rows: PackedStringArray) -> void:
 	tile_set.add_physics_layer()
 	tile_set.add_source(_make_tile_source(TILE_CIRCUIT), 0)
 	tile_set.add_source(_make_tile_source(TILE_CHIP), 1)
+	# Collision must be added AFTER each source belongs to the TileSet, because
+	# a tile's collision polygon references the TileSet's physics layer 0 --
+	# which doesn't exist from the source's point of view until it's attached.
+	_add_tile_collision(tile_set, 0)
+	_add_tile_collision(tile_set, 1)
 	var layer := TileMapLayer.new()
 	layer.tile_set = tile_set
 	layer.add_to_group("ground")
@@ -72,12 +77,16 @@ func _make_tile_source(texture: Texture2D) -> TileSetAtlasSource:
 	source.texture = texture
 	source.texture_region_size = Vector2i(TILE, TILE)
 	source.create_tile(Vector2i.ZERO)
+	return source
+
+
+func _add_tile_collision(tile_set: TileSet, source_id: int) -> void:
+	var source: TileSetAtlasSource = tile_set.get_source(source_id)
 	var data := source.get_tile_data(Vector2i.ZERO, 0)
 	data.add_collision_polygon(0)
 	data.set_collision_polygon_points(0, 0, PackedVector2Array([
 		Vector2(-16, -16), Vector2(16, -16), Vector2(16, 16), Vector2(-16, 16),
 	]))
-	return source
 
 
 func _spawn_entities(rows: PackedStringArray) -> void:
