@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/celebration.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/kid_jump.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bg_server.png" id="3"]
+[ext_resource type="AudioStream" path="res://assets/audio/win.wav" id="4"]
+
+[node name="Celebration" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.054902, 0.090196, 0.14902, 1)
+
+[node name="ServerLeft" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(200, 420)
+scale = Vector2(2, 2)
+modulate = Color(0.8, 0.85, 1, 0.9)
+texture = ExtResource("3")
+
+[node name="ServerRight" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(952, 420)
+scale = Vector2(2, 2)
+modulate = Color(0.8, 0.85, 1, 0.9)
+texture = ExtResource("3")
+
+[node name="Kid" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(576, 360)
+scale = Vector2(5, 5)
+texture = ExtResource("2")
+
+[node name="Confetti" type="CPUParticles2D" parent="."]
+position = Vector2(576, -20)
+amount = 120
+lifetime = 3.5
+preprocess = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(576, 10)
+spread = 30.0
+gravity = Vector2(0, 220)
+initial_velocity_min = 30.0
+initial_velocity_max = 90.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color = Color(1, 0.831373, 0.278431, 1)
+hue_variation_min = -0.5
+hue_variation_max = 0.5
+
+[node name="Arrow" type="Polygon2D" parent="."]
+position = Vector2(576, 560)
+color = Color(0.239216, 1, 0.545098, 1)
+polygon = PackedVector2Array(-18, -22, 18, 0, -18, 22)
+
+[node name="Fanfare" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4")
