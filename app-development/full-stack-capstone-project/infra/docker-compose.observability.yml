@@ -1,0 +1,43 @@
+# Observability overlay: Prometheus + Grafana + exporters.
+#
+#   docker compose -f infra/docker-compose.yml \
+#                  -f infra/docker-compose.kafka-1broker.yml \
+#                  -f infra/docker-compose.observability.yml up -d
+#
+# Grafana: http://localhost:3000 (admin/admin), dashboards pre-provisioned.
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.4.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    # host-gateway lets Prometheus scrape the FastAPI gateway running on the
+    # HOST during dev (host.docker.internal:8000).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:12.0.2
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      # Dashboards + datasource as code — nothing is clicked together by hand.
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+
+  # Per-partition consumer lag, offsets, message rates.
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:v1.8.0
+    command: ["--kafka.server=kafka:19092"]
+    ports:
+      - "9308:9308"
+    restart: on-failure   # retries until the broker is up
+
+  # Host CPU / RAM / disk — context for the load studies.
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    ports:
+      - "9100:9100"

@@ -23,13 +23,18 @@ services:
 
   # MLflow tracking server + registry UI. SQLite backend keeps it to one
   # container — no extra DB needed for a learning project.
+  # Version matches the mlflow client in backend/uv.lock (they speak the
+  # same REST API; a 2.x server 404s on 3.x client calls).
   mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.22.2
+    image: ghcr.io/mlflow/mlflow:v3.14.0
+    # --allowed-hosts: MLflow 3 rejects non-localhost Host headers by default
+    # (DNS-rebinding protection); other containers reach it as "mlflow:5000".
     command: >
       mlflow server
       --backend-store-uri sqlite:////mlflow/mlflow.db
       --artifacts-destination /mlflow/artifacts
       --host 0.0.0.0 --port 5000
+      --allowed-hosts "mlflow:5000,localhost:5000,127.0.0.1:5000"
     ports:
       - "5000:5000"
     volumes:

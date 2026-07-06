@@ -2,6 +2,9 @@
 # these exact commands. Run `make <target>` from this directory.
 
 COMPOSE = docker compose -f infra/docker-compose.yml
+# Full streaming stack = base + Kafka broker(s) + Prometheus/Grafana.
+STREAM1 = $(COMPOSE) -f infra/docker-compose.kafka-1broker.yml -f infra/docker-compose.observability.yml
+STREAM3 = $(COMPOSE) -f infra/docker-compose.kafka-3broker.yml -f infra/docker-compose.observability.yml
 
 # ---------- setup ----------
 install:            ## install backend deps (uv) + frontend deps (npm)
@@ -15,6 +18,15 @@ up:                 ## start Postgres + MLflow containers
 down:               ## stop them (data volumes survive)
 	$(COMPOSE) down
 
+up-streaming:       ## Tier B: + Kafka (1 broker), Spark consumer, Prometheus, Grafana
+	$(STREAM1) up -d --build
+
+up-streaming-3:     ## Tier B: same but 3 Kafka brokers (replication study)
+	$(STREAM3) up -d --build
+
+down-streaming:     ## stop the whole streaming stack
+	$(STREAM1) down --remove-orphans
+
 # ---------- data & models ----------
 seed:               ## batch-load Housing.csv (or synthetic fallback) into Postgres
 	cd backend && uv run python -m ml.seed_data
@@ -23,8 +35,13 @@ train:              ## train LinReg + LightGBM, register both @production in MLf
 	cd backend && uv run python -m ml.train
 
 # ---------- run the app ----------
+# --host 0.0.0.0 so the Prometheus container can scrape the dev gateway
+# through host.docker.internal.
 run-backend:        ## FastAPI on :8000 (direct mode by default)
-	cd backend && uv run uvicorn app.main:app --reload --port 8000
+	cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+run-backend-streaming: ## FastAPI on :8000 in streaming mode (needs up-streaming)
+	cd backend && SERVING_MODE=streaming uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 run-frontend:       ## React dev server on :5173
 	cd frontend && npm run dev
@@ -45,4 +62,11 @@ load:               ## 100-user Locust baseline against localhost:8000
 		--host http://localhost:8000 --headless -u 100 -r 20 -t 60s \
 		--csv ../docs/load/baseline-100u
 
-.PHONY: install up down seed train run-backend run-frontend lint test test-unit load
+load-sweep:         ## 10/100 user sweep; NAME=direct or NAME=streaming labels the CSVs
+	cd backend && for u in 10 100; do \
+		uv run locust -f tests/load/locustfile.py --host http://localhost:8000 \
+			--headless -u $$u -r 50 -t 30s --csv ../docs/load/$(NAME)-$${u}u --only-summary; \
+	done
+
+.PHONY: install up down up-streaming up-streaming-3 down-streaming seed train \
+	run-backend run-backend-streaming run-frontend lint test test-unit load load-sweep

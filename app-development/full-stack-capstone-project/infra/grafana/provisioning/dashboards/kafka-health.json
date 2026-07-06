@@ -1,0 +1,66 @@
+{
+  "title": "Kafka Health",
+  "uid": "kafka-health",
+  "description": "Broker/partition health. Most interesting in the 3-broker topology: stop a broker mid-load and watch ISR shrink, then recover.",
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Brokers online",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 },
+      "targets": [{ "expr": "kafka_brokers", "legendFormat": "brokers" }]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Under-replicated partitions (should be 0)",
+      "gridPos": { "x": 6, "y": 0, "w": 9, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by (topic) (kafka_topic_partition_under_replicated_partition)",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "In-sync replicas per partition",
+      "gridPos": { "x": 15, "y": 0, "w": 9, "h": 6 },
+      "targets": [
+        {
+          "expr": "kafka_topic_partition_in_sync_replica{topic=~\"prediction-.*\"}",
+          "legendFormat": "{{topic}}/p{{partition}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Consumer group lag (sum per topic)",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (consumergroup, topic) (kafka_consumergroup_lag)",
+          "legendFormat": "{{consumergroup}} on {{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Messages in per second per topic",
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (topic) (rate(kafka_topic_partition_current_offset{topic=~\"prediction-.*\"}[1m]))",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39
+}

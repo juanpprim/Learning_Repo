@@ -1,0 +1,9 @@
+# Tells Grafana to load every .json dashboard in this directory at startup.
+apiVersion: 1
+
+providers:
+  - name: capstone
+    folder: Capstone
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards

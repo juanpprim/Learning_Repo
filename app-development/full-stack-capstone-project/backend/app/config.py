@@ -17,7 +17,14 @@ class Settings(BaseSettings):
     # Where the app finds Postgres and MLflow. Defaults suit local dev
     # (docker compose exposes both on localhost).
     DATABASE_URL: str = "postgresql+psycopg2://capstone:capstone@localhost:5432/capstone"
-    MLFLOW_TRACKING_URI: str = "sqlite:///mlflow.db"
+    MLFLOW_TRACKING_URI: str = "http://localhost:5000"
+
+    # --- streaming mode (Tier B) ---
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    TOPIC_REQUESTS: str = "prediction-requests"
+    TOPIC_RESULTS: str = "prediction-results"
+    # How long the gateway waits for the Spark consumer's result before 504.
+    STREAMING_TIMEOUT_S: float = 15.0
 
 
 @lru_cache

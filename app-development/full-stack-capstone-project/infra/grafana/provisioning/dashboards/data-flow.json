@@ -1,0 +1,111 @@
+{
+  "title": "Data-Flow / Pipeline",
+  "uid": "data-flow",
+  "description": "The headline dashboard: watch a request travel gateway -> Kafka -> Spark -> Postgres. Run a Locust sweep and watch the system breathe.",
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "1. Ingress: /predict requests per second",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (serving_mode) (rate(predictions_total[1m]))",
+          "legendFormat": "{{serving_mode}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "2. Serving latency p50 / p95 / p99 (by mode)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by (le, serving_mode) (rate(prediction_latency_seconds_bucket[1m])))",
+          "legendFormat": "p50 {{serving_mode}}"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, serving_mode) (rate(prediction_latency_seconds_bucket[1m])))",
+          "legendFormat": "p95 {{serving_mode}}"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, serving_mode) (rate(prediction_latency_seconds_bucket[1m])))",
+          "legendFormat": "p99 {{serving_mode}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "3. Kafka: topic offset growth (messages in/sec)",
+      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (topic) (rate(kafka_topic_partition_current_offset{topic=~\"prediction-.*\"}[1m]))",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "4. Queue backlog: requests in minus results out (the buffer)",
+      "description": "Spark's Kafka source keeps offsets in its own checkpoints and never commits a consumer group, so kafka_consumergroup_lag is empty for it. This proxy — request-topic offsets minus result-topic offsets — shows the same story: work waiting in the queue.",
+      "gridPos": { "x": 8, "y": 8, "w": 8, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(kafka_topic_partition_current_offset{topic=\"prediction-requests\"}) - sum(kafka_topic_partition_current_offset{topic=\"prediction-results\"})",
+          "legendFormat": "backlog (msgs)"
+        },
+        {
+          "expr": "kafka_consumergroup_lag{topic=\"prediction-requests\"}",
+          "legendFormat": "group lag p{{partition}} ({{consumergroup}})"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "5. Predictions out per second (by model)",
+      "gridPos": { "x": 16, "y": 8, "w": 8, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (model) (rate(predictions_total[1m]))",
+          "legendFormat": "{{model}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "6. Host CPU busy %",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100 }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
+          "legendFormat": "cpu busy"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "7. Host memory used",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+          "legendFormat": "used"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39
+}

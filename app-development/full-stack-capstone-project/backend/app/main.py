@@ -4,15 +4,15 @@ The route handlers are thin on purpose — validation lives in schemas.py,
 model calls live behind the Predictor seam, persistence is a plain ORM insert.
 """
 
-import time
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app import metrics
 from app.config import get_settings
 from app.db import Base, get_engine, get_session
 from app.models_orm import Prediction
@@ -33,7 +33,14 @@ def predictor_dep() -> Predictor:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create tables at startup — simplest possible "migration" strategy.
-    Base.metadata.create_all(get_engine())
+    engine = get_engine()
+    Base.metadata.create_all(engine)
+    # Poor man's migration: create_all never ALTERs an existing table, so add
+    # columns introduced after Tier A here. (A real project would use Alembic.)
+    with engine.begin() as conn:
+        conn.execute(
+            text("ALTER TABLE predictions ADD COLUMN IF NOT EXISTS request_id VARCHAR(36)")
+        )
     yield
 
 
@@ -62,35 +69,16 @@ def predict(
     session: Session = Depends(get_session),
     predictor: Predictor = Depends(predictor_dep),
 ) -> PredictResponse:
-    settings = get_settings()
+    # The predictor owns the whole serving job (predict + persist + respond);
+    # the route just handles HTTP concerns: errors and metrics.
+    try:
+        resp = predictor.predict(req, session)
+    except TimeoutError as exc:
+        # Streaming mode: the consumer didn't answer in time.
+        raise HTTPException(status_code=504, detail=str(exc)) from exc
 
-    # Time the WHOLE serving path (model + persistence), not just the model —
-    # that is the number the direct-vs-streaming load study compares.
-    start = time.perf_counter()
-    price, _model_ms = predictor.predict(req)
-
-    # Persist so the frontend history list (and later drift reports) can read it.
-    row = Prediction(
-        model=req.model,
-        serving_mode=settings.SERVING_MODE,
-        features=req.features.model_dump(),
-        predicted_price=price,
-        latency_ms=0.0,  # placeholder, updated right after we stop the clock
-    )
-    session.add(row)
-    session.commit()
-
-    latency_ms = (time.perf_counter() - start) * 1000
-    row.latency_ms = latency_ms
-    session.commit()
-
-    return PredictResponse(
-        prediction_id=row.id,
-        predicted_price=price,
-        model=req.model,
-        serving_mode=settings.SERVING_MODE,
-        latency_ms=latency_ms,
-    )
+    metrics.observe(resp)  # feeds the predictions_total / latency dashboards
+    return resp
 
 
 @app.get("/predictions", response_model=list[PredictionRecord])

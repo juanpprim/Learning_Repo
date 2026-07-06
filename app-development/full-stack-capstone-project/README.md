@@ -23,6 +23,26 @@ make run-backend # FastAPI on http://localhost:8000  (docs at /docs)
 make run-frontend# React on http://localhost:5173
 ```
 
+## Streaming mode (Tier B)
+
+Same API, different path: `/predict` → Kafka → Spark Structured Streaming →
+Postgres → response. One env var flips it; the response contract is identical
+(enforced by `tests/integration/test_contract.py`).
+
+```bash
+make up-streaming           # + Kafka (1 broker) + Spark consumer + Prometheus + Grafana
+make train                  # (re)register models in the MLflow the Spark job reads
+make run-backend-streaming  # gateway with SERVING_MODE=streaming
+```
+
+- Grafana dashboards (provisioned as code): http://localhost:3000 (admin/admin)
+  — **Data-Flow / Pipeline** is the headline; run `make load` and watch it breathe.
+- Prometheus: http://localhost:9090 · Spark UI: http://localhost:4040
+- 3-broker replication study: `make up-streaming-3`, then
+  `docker stop infra-kafka2-1` mid-load and watch the Kafka Health dashboard.
+- Load comparison: `make load-sweep NAME=direct` vs `NAME=streaming`
+  (see `docs/load-study.md`).
+
 ### Dataset
 
 Real data: download [Kaggle housing-prices-dataset](https://www.kaggle.com/datasets/yasserh/housing-prices-dataset)
@@ -52,6 +72,6 @@ docs/      load-test results and study write-ups
 ## Status
 
 - [x] Tier A — core walking skeleton (direct mode, e2e tested, load baseline)
-- [ ] Tier B — streaming + observability
+- [x] Tier B — streaming + observability (Kafka+Spark path live, dashboards, load study)
 - [ ] Tier C — production depth
 - [ ] Tier D — stretch

@@ -1,0 +1,87 @@
+# Kafka overlay #2: three KRaft brokers, replication factor 3 — for studying
+# replication, ISR, under-replicated partitions and rebalancing.
+#
+#   docker compose -f infra/docker-compose.yml \
+#                  -f infra/docker-compose.kafka-3broker.yml up -d
+#
+# Chaos drill: `docker stop infra-kafka2-1` mid-load and watch the Kafka
+# health dashboard — the topic stays available (ISR shrinks), and catches
+# back up when the broker returns.
+
+x-kafka-common: &kafka-common
+  image: apache/kafka:3.9.0
+  environment: &kafka-env
+    KAFKA_PROCESS_ROLES: broker,controller
+    KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka1:29093,2@kafka2:29093,3@kafka3:29093
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+    KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+    KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+
+services:
+  kafka1:
+    <<: *kafka-common
+    ports: ["9092:9092"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://:19092,CONTROLLER://:29093,PLAINTEXT_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:19092,PLAINTEXT_HOST://localhost:9092
+
+  kafka2:
+    <<: *kafka-common
+    ports: ["9093:9093"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENERS: PLAINTEXT://:19092,CONTROLLER://:29093,PLAINTEXT_HOST://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:19092,PLAINTEXT_HOST://localhost:9093
+
+  kafka3:
+    <<: *kafka-common
+    ports: ["9094:9094"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENERS: PLAINTEXT://:19092,CONTROLLER://:29093,PLAINTEXT_HOST://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:19092,PLAINTEXT_HOST://localhost:9094
+
+  kafka-init:
+    image: apache/kafka:3.9.0
+    depends_on: [kafka1, kafka2, kafka3]
+    entrypoint: ["/bin/sh", "-c"]
+    # rf=3: every partition has a replica on every broker; min ISR 2 means we
+    # tolerate losing one broker without losing write availability.
+    command:
+      - |
+        sleep 15
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka1:19092 --create --if-not-exists \
+          --topic prediction-requests --partitions 3 --replication-factor 3 --config min.insync.replicas=2
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka1:19092 --create --if-not-exists \
+          --topic prediction-results --partitions 3 --replication-factor 3 --config min.insync.replicas=2
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka1:19092 --describe
+
+  # Point the exporter at broker 1 (there is no service named "kafka" here).
+  # Image repeated so this file is also valid without the observability overlay.
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:v1.8.0
+    command: ["--kafka.server=kafka1:19092"]
+    restart: on-failure
+
+  spark-consumer:
+    build:
+      context: ../backend
+      dockerfile: spark/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka1:19092,kafka2:19092,kafka3:19092
+      DATABASE_URL: postgresql+psycopg2://capstone:capstone@postgres:5432/capstone
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    ports:
+      - "4040:4040"

@@ -177,21 +177,21 @@ of simultaneous users" goal.
 ## Build phases (tiered so there's a finishable MVP)
 
 ### Tier A — Core walking skeleton (satisfies the whole brief end-to-end)
-- [ ] `seed_data.py`: Housing.csv → Postgres (batch, idempotent).
-- [ ] `train.py`: LinearRegression + LightGBM → MLflow, both registered.
-- [ ] FastAPI gateway: `/predict` (model + `SERVING_MODE`), `/health`, `/metrics`.
-- [ ] `direct` mode working end-to-end first.
-- [ ] React frontend: prediction form + history list.
-- [ ] Locust load sweep against `direct` mode; record baseline latency/throughput.
+- [x] `seed_data.py`: Housing.csv → Postgres (batch, idempotent).
+- [x] `train.py`: LinearRegression + LightGBM → MLflow, both registered.
+- [x] FastAPI gateway: `/predict` (model + `SERVING_MODE`), `/health`, `/metrics`.
+- [x] `direct` mode working end-to-end first.
+- [x] React frontend: prediction form + history list.
+- [x] Locust load sweep against `direct` mode; record baseline latency/throughput.
 
 ### Tier B — Streaming + observability (the heart of the project)
-- [ ] Kafka **1-broker** compose (KRaft); topics `prediction-requests` / `-results`.
-- [ ] Spark Structured Streaming consumer: load MLflow model → predict → emit results.
-- [ ] Gateway `streaming` path with SSE/poll return; flag flips cleanly.
-- [ ] Prometheus + Grafana + kafka-exporter + node-exporter, dashboards provisioned.
-- [ ] Data-Flow dashboard shows a live request traversing the system.
-- [ ] Kafka **3-broker** compose overlay; document replication/rebalance behavior.
-- [ ] Load study: `direct` vs `streaming`, 1 vs N consumers, lag captured.
+- [x] Kafka **1-broker** compose (KRaft); topics `prediction-requests` / `-results`.
+- [x] Spark Structured Streaming consumer: load MLflow model → predict → emit results.
+- [x] Gateway `streaming` path with poll return; flag flips cleanly (contract test covers both modes).
+- [x] Prometheus + Grafana + kafka-exporter + node-exporter, dashboards provisioned.
+- [x] Data-Flow dashboard shows a live request traversing the system.
+- [x] Kafka **3-broker** compose overlay; replication/rebalance behavior in `docs/kafka-3broker-notes.md`.
+- [x] Load study: `direct` vs `streaming` in `docs/load-study.md` (scaling consumers noted for C.5).
 
 ### Tier C — Production depth
 - [ ] Multi-stage Dockerfiles; full `docker compose up` for the whole stack.
@@ -269,8 +269,8 @@ in [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) as a reference backlog.
 
 ## Status
 - [x] Plan revised (v2)
-- [ ] Tier A — Core walking skeleton
-- [ ] Tier B — Streaming + observability
+- [x] Tier A — Core walking skeleton
+- [x] Tier B — Streaming + observability
 - [ ] Tier C — Production depth
 - [ ] Tier C.5 — Kubernetes + HPA autoscaling
 - [ ] Tier D — Stretch

@@ -1,7 +1,7 @@
 """Unit test for DirectPredictor — learning goal: mock the boundary, test the logic.
 
-We inject a fake model so no MLflow/network is involved; what we actually test
-is OUR code: model selection, price extraction, latency measurement.
+We inject a fake model AND a fake session, so no MLflow/DB is involved; what we
+actually test is OUR code: model selection, persistence call, latency measurement.
 """
 
 from app.schemas import PredictRequest
@@ -16,11 +16,23 @@ class FakeModel:
         return [42.0]
 
 
-def test_predict_uses_injected_model_and_measures_latency():
+class FakeSession:
+    """Stands in for a SQLAlchemy session; assigns the id a real DB would."""
+
+    def add(self, row):
+        row.id = 7  # the DB would autoincrement this
+
+    def commit(self):
+        pass
+
+
+def test_predict_uses_injected_model_persists_and_measures_latency():
     predictor = DirectPredictor(models={"lightgbm": FakeModel()})
     req = PredictRequest(features=VALID_FEATURES, model="lightgbm")
 
-    price, latency_ms = predictor.predict(req)
+    resp = predictor.predict(req, FakeSession())
 
-    assert price == 42.0
-    assert latency_ms > 0  # perf_counter always advances
+    assert resp.predicted_price == 42.0
+    assert resp.prediction_id == 7          # came back from the "persisted" row
+    assert resp.serving_mode == "direct"
+    assert resp.latency_ms > 0              # perf_counter always advances

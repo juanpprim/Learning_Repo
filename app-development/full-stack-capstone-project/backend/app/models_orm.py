@@ -19,6 +19,9 @@ class Prediction(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
+    # Correlates a streamed request with the row the Spark consumer writes;
+    # NULL for direct-mode predictions (they don't travel through Kafka).
+    request_id: Mapped[str | None] = mapped_column(String(36), index=True, nullable=True)
     model: Mapped[str] = mapped_column(String(20))          # "linreg" | "lightgbm"
     serving_mode: Mapped[str] = mapped_column(String(20))   # "direct" | "streaming"
     features: Mapped[dict] = mapped_column(JSON)            # raw request features
