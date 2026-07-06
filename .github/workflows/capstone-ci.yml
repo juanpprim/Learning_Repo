@@ -1,0 +1,63 @@
+# CI for the full-stack capstone (Tier C).
+# Jobs run in a fail-fast chain: cheap lint first, then tests, then the
+# model-regression gate, and only then the (expensive) image builds.
+name: capstone-ci
+
+on:
+  push:
+    branches: [main, tier-*]
+    paths: ["app-development/full-stack-capstone-project/**", ".github/workflows/capstone-ci.yml"]
+  pull_request:
+    paths: ["app-development/full-stack-capstone-project/**", ".github/workflows/capstone-ci.yml"]
+
+defaults:
+  run:
+    working-directory: app-development/full-stack-capstone-project
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: ruff (backend)
+        run: cd backend && uv sync --quiet && uv run ruff check .
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: typecheck + build (frontend)
+        run: cd frontend && npm ci && npm run build
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest   # Docker available -> testcontainers works
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: backend unit + integration tests
+        run: cd backend && uv sync --quiet && uv run pytest -q
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: frontend component tests
+        run: cd frontend && npm ci && npm test
+
+  # Learning goal: CI blocks merges on MODEL quality, not just code quality.
+  model-regression-gate:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: candidate vs baseline RMSE (tolerance 2%)
+        run: cd backend && uv sync --quiet && uv run python -m ml.regression_gate
+
+  build-images:
+    needs: [test, model-regression-gate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build backend image
+        run: docker build -t capstone-backend backend
+      - name: build spark-consumer image
+        run: docker build -t capstone-spark -f backend/spark/Dockerfile backend
+      - name: build frontend image
+        run: docker build -t capstone-frontend frontend

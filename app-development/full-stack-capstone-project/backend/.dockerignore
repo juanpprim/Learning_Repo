@@ -1,0 +1,7 @@
+# keep the image build context small — the venv alone is ~1 GB
+.venv/
+.pytest_cache/
+.ruff_cache/
+mlruns/
+mlflow.db
+tests/

@@ -1,0 +1,37 @@
+# App overlay (Tier C): the gateway + frontend as containers, so the WHOLE
+# stack runs with one command on a clean machine:
+#
+#   docker compose -f infra/docker-compose.yml \
+#                  -f infra/docker-compose.kafka-1broker.yml \
+#                  -f infra/docker-compose.observability.yml \
+#                  -f infra/docker-compose.app.yml up -d --build
+#
+# (= `make up-full`) then: make seed && make train, and open http://localhost:5173
+
+services:
+  backend:
+    build: ../backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    environment:
+      SERVING_MODE: ${SERVING_MODE:-streaming}
+      DATABASE_URL: postgresql+psycopg2://capstone:capstone@postgres:5432/capstone
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      API_KEY: ${API_KEY:-}          # set to require X-API-Key on /predict
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        # The BROWSER calls the gateway, so it needs the host-visible URL.
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend

@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     # How long the gateway waits for the Spark consumer's result before 504.
     STREAMING_TIMEOUT_S: float = 15.0
 
+    # --- edge hardening (Tier C) ---
+    # API key required on /predict when non-empty ("" = auth disabled for dev).
+    API_KEY: str = ""
+    # Load-shedding at the ingress; slowapi format "<count>/<period>".
+    RATE_LIMIT: str = "1000/minute"
+
 
 @lru_cache
 def get_settings() -> Settings:

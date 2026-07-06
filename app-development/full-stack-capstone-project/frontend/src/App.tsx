@@ -6,6 +6,7 @@ import { useState } from "react";
 import "./App.css";
 import HistoryList from "./components/HistoryList";
 import PredictForm from "./components/PredictForm";
+import ExplainPanel from "./components/explain/ExplainPanel";
 
 export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -23,6 +24,7 @@ export default function App() {
           <HistoryList refreshKey={refreshKey} />
         </section>
       </div>
+      <ExplainPanel />
     </main>
   );
 }

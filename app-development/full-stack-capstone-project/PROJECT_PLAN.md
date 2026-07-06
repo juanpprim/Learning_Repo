@@ -194,14 +194,13 @@ of simultaneous users" goal.
 - [x] Load study: `direct` vs `streaming` in `docs/load-study.md` (scaling consumers noted for C.5).
 
 ### Tier C — Production depth
-- [ ] Multi-stage Dockerfiles; full `docker compose up` for the whole stack.
-- [ ] CI/CD (GitHub Actions): ruff + pytest + model-regression gate + image build.
-- [ ] Evidently drift report over logged predictions; alert wired into Grafana.
-- [ ] D3 model-explainability views: r2d3 partition (LightGBM) + regression/residuals (LinReg).
-- [ ] **Edge & resilience:** rate limiting (load-shedding at the ingress),
-      request-schema validation (pandera/Pydantic), basic auth on the gateway;
-      **chaos drills** — kill a Kafka broker / container mid-load and watch
-      recovery in Grafana (consumer lag spike → drain).
+- [x] Multi-stage Dockerfiles; full `docker compose up` for the whole stack (`make up-full`).
+- [x] CI/CD (GitHub Actions): ruff + pytest + model-regression gate + image build.
+- [x] Evidently drift check (`GET /drift`) over logged predictions; gauge + Grafana alert at 30%.
+- [x] D3 model-explainability views: tree partition (LightGBM) + coefficient bars (LinReg).
+- [x] **Edge & resilience:** rate limiting (slowapi 429 load-shedding),
+      Pydantic request validation, API-key auth on `/predict`;
+      **chaos drill** scripted in `backend/tests/chaos/kill_broker.sh` (`make chaos`).
 
 ### Tier C.5 — Kubernetes + HPA autoscaling
 > Layer this on *after* Tier B works in docker-compose. Only the stateless
@@ -271,6 +270,6 @@ in [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) as a reference backlog.
 - [x] Plan revised (v2)
 - [x] Tier A — Core walking skeleton
 - [x] Tier B — Streaming + observability
-- [ ] Tier C — Production depth
+- [x] Tier C — Production depth
 - [ ] Tier C.5 — Kubernetes + HPA autoscaling
 - [ ] Tier D — Stretch

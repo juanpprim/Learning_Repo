@@ -1,0 +1,40 @@
+# Provisioned alert: fire when the share of drifted feature columns exceeds
+# 30% for 2 minutes. The gauge is set by GET /drift (backend/app/drift.py),
+# so hit that endpoint (or schedule it) to refresh the value.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: drift
+    folder: Capstone
+    interval: 1m
+    rules:
+      - uid: data-drift-high
+        title: Data drift above 30%
+        condition: C
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: >-
+            Live /predict feature distributions have drifted from the training
+            data (data_drift_share > 0.3). Consider retraining — see /drift.
+        data:
+          # A: the raw gauge from Prometheus.
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              expr: data_drift_share
+              refId: A
+              instant: true
+          # C: threshold expression — alert when A > 0.3.
+          - refId: C
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0.3] }

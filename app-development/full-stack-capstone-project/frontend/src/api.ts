@@ -56,3 +56,42 @@ export async function fetchHistory(limit = 20): Promise<PredictionRecord[]> {
   if (!resp.ok) throw new Error(`history failed: ${resp.status}`);
   return resp.json();
 }
+
+// --- explainability (Tier C) — shapes mirror backend/app/explain.py ---
+
+export interface Coefficient {
+  feature: string;
+  coefficient: number;
+}
+
+export interface LinregExplanation {
+  intercept: number;
+  coefficients: Coefficient[];
+}
+
+/** A LightGBM tree node: either a split (feature/threshold) or a leaf (value). */
+export interface TreeNode {
+  feature?: string;
+  threshold?: number;
+  left?: TreeNode;
+  right?: TreeNode;
+  value?: number;
+}
+
+export interface LightgbmExplanation {
+  tree_index: number;
+  n_trees: number;
+  tree: TreeNode;
+}
+
+export async function fetchLinregExplanation(): Promise<LinregExplanation> {
+  const resp = await fetch(`${BASE}/explain/linreg`);
+  if (!resp.ok) throw new Error(`explain failed: ${resp.status}`);
+  return resp.json();
+}
+
+export async function fetchLightgbmExplanation(tree = 0): Promise<LightgbmExplanation> {
+  const resp = await fetch(`${BASE}/explain/lightgbm?tree=${tree}`);
+  if (!resp.ok) throw new Error(`explain failed: ${resp.status}`);
+  return resp.json();
+}

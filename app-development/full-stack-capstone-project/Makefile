@@ -27,6 +27,18 @@ up-streaming-3:     ## Tier B: same but 3 Kafka brokers (replication study)
 down-streaming:     ## stop the whole streaming stack
 	$(STREAM1) down --remove-orphans
 
+up-full:            ## Tier C: EVERYTHING in containers (app + kafka + observability)
+	$(STREAM1) -f infra/docker-compose.app.yml up -d --build
+
+down-full:          ## stop the full containerized stack
+	$(STREAM1) -f infra/docker-compose.app.yml down --remove-orphans
+
+gate:               ## model-regression gate (same command CI runs)
+	cd backend && uv run python -m ml.regression_gate
+
+chaos:              ## kill a Kafka broker mid-flight (needs up-streaming-3)
+	cd backend && ./tests/chaos/kill_broker.sh
+
 # ---------- data & models ----------
 seed:               ## batch-load Housing.csv (or synthetic fallback) into Postgres
 	cd backend && uv run python -m ml.seed_data

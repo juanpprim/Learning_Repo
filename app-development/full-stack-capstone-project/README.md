@@ -43,6 +43,24 @@ make run-backend-streaming  # gateway with SERVING_MODE=streaming
 - Load comparison: `make load-sweep NAME=direct` vs `NAME=streaming`
   (see `docs/load-study.md`).
 
+## Production depth (Tier C)
+
+```bash
+make up-full   # EVERYTHING in containers: app + Kafka + Spark + observability
+make gate      # model-regression gate (CI blocks merges when a model regresses >2%)
+make chaos     # kill a Kafka broker mid-flight, assert the platform survives
+```
+
+- **CI** (`.github/workflows/capstone-ci.yml`): lint → tests (testcontainers) →
+  model-regression gate → image builds.
+- **Drift**: `GET /drift` runs Evidently on live request features vs training
+  data, exports `data_drift_share`; a provisioned Grafana alert fires above 30%.
+- **Explainability**: the frontend's "Why does the model predict that?" panel —
+  D3 coefficient bars (linreg) and tree partition (lightgbm) fed by
+  `GET /explain/{model}`.
+- **Edge**: optional API key (`API_KEY` env → `X-API-Key` header) and rate
+  limiting (`RATE_LIMIT`, default 1000/minute → 429 past the limit).
+
 ### Dataset
 
 Real data: download [Kaggle housing-prices-dataset](https://www.kaggle.com/datasets/yasserh/housing-prices-dataset)
@@ -73,5 +91,5 @@ docs/      load-test results and study write-ups
 
 - [x] Tier A — core walking skeleton (direct mode, e2e tested, load baseline)
 - [x] Tier B — streaming + observability (Kafka+Spark path live, dashboards, load study)
-- [ ] Tier C — production depth
+- [x] Tier C — production depth (containers, CI + model gate, drift, D3 views, edge/chaos)
 - [ ] Tier D — stretch

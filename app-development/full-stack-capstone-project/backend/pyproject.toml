@@ -17,6 +17,8 @@ dependencies = [
     "mlflow>=2.16",
     "prometheus-fastapi-instrumentator>=7.0",
     "confluent-kafka>=2.6",
+    "slowapi>=0.1.9",       # rate limiting (Tier C edge hardening)
+    "evidently>=0.7",       # data drift detection (Tier C monitoring)
 ]
 
 [dependency-groups]
