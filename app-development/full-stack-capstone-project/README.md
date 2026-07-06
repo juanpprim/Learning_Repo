@@ -61,6 +61,18 @@ make chaos     # kill a Kafka broker mid-flight, assert the platform survives
 - **Edge**: optional API key (`API_KEY` env → `X-API-Key` header) and rate
   limiting (`RATE_LIMIT`, default 1000/minute → 429 past the limit).
 
+## Stretch (Tier D)
+
+```bash
+make amplify        # 545 rows -> 1M-row parquet (property-tested generator)
+make airflow-up     # Airflow standalone orchestrating seed -> train -> gate
+make airflow-check  # DAG integrity test (import errors must be empty)
+make airflow-run    # trigger the pipeline; UI at http://localhost:8080
+```
+
+Implemented: D1 amplification + D2 Airflow. D3 Feast / D4 OTel / D5 GPU are
+documented options — see [`docs/tier-d-notes.md`](docs/tier-d-notes.md).
+
 ### Dataset
 
 Real data: download [Kaggle housing-prices-dataset](https://www.kaggle.com/datasets/yasserh/housing-prices-dataset)

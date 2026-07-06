@@ -221,11 +221,13 @@ of simultaneous users" goal.
       stack simultaneously.)
 
 ### Tier D — Stretch (use amplified synthetic data so the big tools earn their place)
-- [ ] Amplify housing rows → millions via sampling/perturbation for volume.
-- [ ] Airflow DAG orchestrating seed → train → register.
-- [ ] Feast online/offline feature store (Redis online).
-- [ ] OpenTelemetry tracing → Tempo/Jaeger across gateway → Kafka → Spark.
-- [ ] LightGBM GPU histogram training on the RTX 3090; benchmark vs CPU.
+> À la carte per the spec; done items have exit artifacts, the rest are documented
+> options (see `docs/tier-d-notes.md`).
+- [x] Amplify housing rows → millions via sampling/perturbation (`make amplify`, hypothesis property tests).
+- [x] Airflow DAG orchestrating seed → train → gate (`make airflow-up` / `airflow-check` / `airflow-run`).
+- [ ] Feast online/offline feature store (Redis online) — deferred.
+- [ ] OpenTelemetry tracing → Tempo/Jaeger across gateway → Kafka → Spark — deferred.
+- [ ] LightGBM GPU histogram training on the RTX 3090; benchmark vs CPU — deferred (pip wheel has no CUDA).
 
 ---
 

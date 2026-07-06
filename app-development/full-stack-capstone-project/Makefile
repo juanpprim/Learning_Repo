@@ -39,6 +39,27 @@ gate:               ## model-regression gate (same command CI runs)
 chaos:              ## kill a Kafka broker mid-flight (needs up-streaming-3)
 	cd backend && ./tests/chaos/kill_broker.sh
 
+# ---------- Tier D ----------
+amplify:            ## 545 rows -> 1M-row parquet (data/housing_amplified.parquet)
+	cd backend && uv run python -m ml.amplify --rows 1000000
+
+airflow-up:         ## Airflow standalone orchestrating seed -> train -> gate
+	$(COMPOSE) -f infra/docker-compose.airflow.yml up -d
+
+airflow-check:      ## DAG integrity: fail if any DAG has import errors
+	docker compose -f infra/docker-compose.yml -f infra/docker-compose.airflow.yml \
+		exec airflow airflow dags list-import-errors
+	docker compose -f infra/docker-compose.yml -f infra/docker-compose.airflow.yml \
+		exec airflow airflow dags list
+
+airflow-run:        ## trigger the housing_pipeline DAG once
+	# unpause first: DAGs start paused in a fresh metadata DB, and a
+	# trigger on a paused DAG sits in "queued" forever.
+	docker compose -f infra/docker-compose.yml -f infra/docker-compose.airflow.yml \
+		exec airflow airflow dags unpause housing_pipeline
+	docker compose -f infra/docker-compose.yml -f infra/docker-compose.airflow.yml \
+		exec airflow airflow dags trigger housing_pipeline
+
 # ---------- data & models ----------
 seed:               ## batch-load Housing.csv (or synthetic fallback) into Postgres
 	cd backend && uv run python -m ml.seed_data
@@ -80,5 +101,6 @@ load-sweep:         ## 10/100 user sweep; NAME=direct or NAME=streaming labels t
 			--headless -u $$u -r 50 -t 30s --csv ../docs/load/$(NAME)-$${u}u --only-summary; \
 	done
 
-.PHONY: install up down up-streaming up-streaming-3 down-streaming seed train \
+.PHONY: install up down up-streaming up-streaming-3 down-streaming up-full down-full \
+	seed train gate chaos amplify airflow-up airflow-check airflow-run \
 	run-backend run-backend-streaming run-frontend lint test test-unit load load-sweep

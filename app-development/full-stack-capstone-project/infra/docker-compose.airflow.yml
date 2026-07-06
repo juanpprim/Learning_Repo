@@ -1,0 +1,43 @@
+# Airflow overlay (Tier D2): one standalone container orchestrating the
+# seed -> train -> gate pipeline against the base stack's Postgres + MLflow.
+#
+#   docker compose -f infra/docker-compose.yml \
+#                  -f infra/docker-compose.airflow.yml up -d      (= make airflow-up)
+#
+# UI: http://localhost:8080 — credentials are printed in the container log
+# (`docker logs infra-airflow-1 | grep password`).
+
+services:
+  airflow:
+    # Thin custom layer: LightGBM's native lib needs OpenMP (libgomp1),
+    # which the stock airflow image doesn't ship.
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM apache/airflow:3.0.2
+        USER root
+        RUN apt-get update \
+            && apt-get install -y --no-install-recommends libgomp1 \
+            && rm -rf /var/lib/apt/lists/*
+        USER airflow
+    command: airflow standalone   # scheduler + api-server + trigger in one (dev mode)
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/capstone/airflow_dags
+      # Dev-image feature: install the pipeline's ML deps at startup, pinned
+      # to the same versions as backend/uv.lock (pickle compatibility).
+      _PIP_ADDITIONAL_REQUIREMENTS: >-
+        mlflow==3.14.0 lightgbm==4.6.0 scikit-learn==1.9.0 pandas==2.3.3
+        numpy==2.5.1 psycopg2-binary==2.9.12 pydantic-settings==2.14.2
+      # Where the pipeline tasks find the platform services.
+      DATABASE_URL: postgresql+psycopg2://capstone:capstone@postgres:5432/capstone
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    volumes:
+      - ../backend:/opt/capstone:ro   # DAG + ml/ modules, read-only
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started

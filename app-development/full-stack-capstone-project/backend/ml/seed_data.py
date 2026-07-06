@@ -17,11 +17,22 @@ def seed(database_url: str | None = None) -> int:
     engine = create_engine(url)
     df = load_housing_df()
 
-    with engine.begin() as conn:  # begin() = one transaction, auto-commit/rollback
-        # Idempotency: wipe and rewrite. For a static 545-row reference table
-        # this is simpler and safer than upsert logic.
+    columns = list(df.columns)
+    ddl = ", ".join(
+        f"{c} TEXT" if df[c].dtype == object else f"{c} BIGINT" for c in columns
+    )
+    insert = text(
+        f"INSERT INTO houses ({', '.join(columns)}) "
+        f"VALUES ({', '.join(':' + c for c in columns)})"
+    )
+
+    # Idempotency: wipe and rewrite in ONE transaction. Plain SQL instead of
+    # pandas.to_sql so this also runs inside the Airflow image, which pins
+    # SQLAlchemy 1.4 (pandas' to_sql needs 2.x).
+    with engine.begin() as conn:
         conn.execute(text("DROP TABLE IF EXISTS houses"))
-        df.to_sql("houses", conn, index=False)
+        conn.execute(text(f"CREATE TABLE houses ({ddl})"))
+        conn.execute(insert, df.to_dict("records"))  # executemany under the hood
         count = conn.execute(text("SELECT count(*) FROM houses")).scalar_one()
 
     print(f"seeded {count} rows into 'houses'")

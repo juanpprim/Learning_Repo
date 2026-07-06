@@ -1,0 +1,3 @@
+# Generated artifacts stay out of git; the real Kaggle CSV (Housing.csv)
+# may be committed if you download it.
+housing_amplified.parquet
