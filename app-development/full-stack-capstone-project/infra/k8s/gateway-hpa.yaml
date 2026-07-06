@@ -1,0 +1,30 @@
+# The point of Tier C.5: pods scale out as load rises, back in as it falls.
+#
+# CPU-based because k3s ships metrics-server out of the box — zero extra
+# infra. Utilization is relative to the pod's cpu REQUEST (200m), so 60%
+# means "scale when average pod CPU exceeds 120 millicores". A custom-metric
+# HPA on Kafka consumer lag (via prometheus-adapter) is the documented
+# stretch, not built here.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gateway
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gateway
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0    # react immediately during the demo
+    scaleDown:
+      stabilizationWindowSeconds: 60   # linger a bit so the demo is visible

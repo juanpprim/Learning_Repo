@@ -61,6 +61,24 @@ make chaos     # kill a Kafka broker mid-flight, assert the platform survives
 - **Edge**: optional API key (`API_KEY` env → `X-API-Key` header) and rate
   limiting (`RATE_LIMIT`, default 1000/minute → 429 past the limit).
 
+## Kubernetes + HPA (Tier C.5)
+
+Only the **stateless serving layer** moves to k8s (a local k3d cluster); the
+stateful infra stays in compose. Pods reach it via `host.k3d.internal`.
+
+```bash
+make k3d-up         # cluster (needs k3d + kubectl in ~/.local/bin)
+make k3d-deploy     # build + import the gateway image, apply infra/k8s/
+make k3d-watch-hpa  # then run a load sweep and watch replicas rise
+make k3d-chaos      # delete a pod mid-traffic; Service reroutes (20/20 served)
+make k3d-down
+```
+
+Observed results (scale 1→2 at 30 users, overload lessons at 100, chaos
+drill): [`docs/k8s-hpa-notes.md`](docs/k8s-hpa-notes.md). Grafana Data-Flow
+panel 9 charts pod count vs RPS. *4-core host: pair with the 1-broker
+overlay only.*
+
 ## Stretch (Tier D)
 
 ```bash
@@ -104,4 +122,5 @@ docs/      load-test results and study write-ups
 - [x] Tier A — core walking skeleton (direct mode, e2e tested, load baseline)
 - [x] Tier B — streaming + observability (Kafka+Spark path live, dashboards, load study)
 - [x] Tier C — production depth (containers, CI + model gate, drift, D3 views, edge/chaos)
+- [x] Tier C.5 — Kubernetes + HPA (k3d, probes/limits, autoscale demo, pod chaos drill)
 - [ ] Tier D — stretch

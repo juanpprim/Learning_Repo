@@ -23,3 +23,13 @@ scrape_configs:
   - job_name: node
     static_configs:
       - targets: ["node-exporter:9100"]
+
+  # Tier C.5: k8s object state (pod/replica counts for the HPA panel).
+  # kube-state-metrics runs in the k3d cluster; its NodePort 30080 is mapped
+  # to the host by k3d, so we scrape it the same way we scrape the dev gateway.
+  # (The `gateway` job above needs no change: with the k3d loadbalancer
+  # publishing host port 8000, host.docker.internal:8000 now reaches the
+  # gateway PODS through Traefik.)
+  - job_name: kube-state-metrics
+    static_configs:
+      - targets: ["host.docker.internal:30080"]

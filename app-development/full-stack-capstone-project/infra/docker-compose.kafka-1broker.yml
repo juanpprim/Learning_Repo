@@ -11,13 +11,20 @@ services:
     image: apache/kafka:3.9.0
     ports:
       - "9092:9092"
+      - "29092:29092"   # k3d listener (see below)
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
-      KAFKA_LISTENERS: PLAINTEXT://:19092,CONTROLLER://:29093,PLAINTEXT_HOST://:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:19092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # Three client listeners because three kinds of clients, each needing a
+      # DIFFERENT advertised address (Kafka hands clients this address after
+      # the first bootstrap, so it must be resolvable FROM the client):
+      #   PLAINTEXT      -> other compose containers ("kafka")
+      #   PLAINTEXT_HOST -> processes on the host ("localhost")
+      #   PLAINTEXT_K3D  -> pods in the k3d cluster ("host.k3d.internal", Tier C.5)
+      KAFKA_LISTENERS: PLAINTEXT://:19092,CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT_K3D://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:19092,PLAINTEXT_HOST://localhost:9092,PLAINTEXT_K3D://host.k3d.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,PLAINTEXT_K3D:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       # Single broker => everything at replication factor 1.

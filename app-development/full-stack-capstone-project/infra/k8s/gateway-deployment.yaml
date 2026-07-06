@@ -1,0 +1,64 @@
+# Tier C.5: the FastAPI gateway as a k8s Deployment.
+#
+# ONLY the stateless serving layer moves to k8s — replicating the gateway is
+# safe because all state (predictions, models, the queue) lives outside the
+# pod. Kafka/Spark/MLflow/Postgres stay in docker compose; pods reach them
+# through k3d's built-in `host.k3d.internal` alias for the host machine.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  replicas: 1               # the HPA takes over from here (min 1, max 5)
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          # Local image, side-loaded with `k3d image import capstone-backend`
+          # (no registry involved); Never = don't try to pull it.
+          image: capstone-backend
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SERVING_MODE
+              value: streaming
+            - name: DATABASE_URL
+              value: postgresql+psycopg2://capstone:capstone@host.k3d.internal:5432/capstone
+            - name: MLFLOW_TRACKING_URI
+              value: http://host.k3d.internal:5000
+            # 29092 = the PLAINTEXT_K3D listener that ADVERTISES
+            # host.k3d.internal (the default one advertises "localhost",
+            # which would send pods to themselves).
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: host.k3d.internal:29092
+          # Liveness: restart a wedged container. Readiness: only Ready pods
+          # receive Service traffic — this is what makes the pod-delete chaos
+          # drill and rolling updates seamless.
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # Requests size the pod for scheduling; limits cap it. Kept small on
+          # purpose: the 4-core host must fit several pods AND the HPA's CPU%
+          # is measured against the REQUEST, so a low request means load
+          # actually pushes utilization past the 60% target.
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi

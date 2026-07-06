@@ -39,6 +39,33 @@ gate:               ## model-regression gate (same command CI runs)
 chaos:              ## kill a Kafka broker mid-flight (needs up-streaming-3)
 	cd backend && ./tests/chaos/kill_broker.sh
 
+# ---------- Tier C.5: Kubernetes + HPA (k3d) ----------
+# Mind the 4-core host: run these alongside the 1-broker overlay, never 3-broker.
+KUBECTL = PATH=$$HOME/.local/bin:$$PATH kubectl
+
+k3d-up:             ## create the k3d cluster (gateway on :8000, ksm on :30080)
+	PATH=$$HOME/.local/bin:$$PATH k3d cluster create capstone \
+		-p "8000:80@loadbalancer" -p "30080:30080@server:0" --wait
+
+k3d-deploy:         ## build+import the gateway image, apply all manifests
+	docker build -t capstone-backend backend
+	PATH=$$HOME/.local/bin:$$PATH k3d image import capstone-backend -c capstone
+	$(KUBECTL) apply -f infra/k8s/
+	$(KUBECTL) rollout status deployment/gateway --timeout=180s
+
+k3d-status:         ## pods, HPA state, recent events
+	$(KUBECTL) get pods,hpa,ingress
+	$(KUBECTL) top pods 2>/dev/null || true
+
+k3d-watch-hpa:      ## live view while a load sweep runs
+	$(KUBECTL) get hpa gateway --watch
+
+k3d-chaos:          ## delete a gateway pod mid-load; Service should reroute
+	cd backend && ./tests/chaos/kill_pod.sh
+
+k3d-down:           ## delete the cluster (compose stack untouched)
+	PATH=$$HOME/.local/bin:$$PATH k3d cluster delete capstone
+
 # ---------- Tier D ----------
 amplify:            ## 545 rows -> 1M-row parquet (data/housing_amplified.parquet)
 	cd backend && uv run python -m ml.amplify --rows 1000000

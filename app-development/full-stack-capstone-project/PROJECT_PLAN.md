@@ -205,20 +205,18 @@ of simultaneous users" goal.
 ### Tier C.5 — Kubernetes + HPA autoscaling
 > Layer this on *after* Tier B works in docker-compose. Only the stateless
 > serving layer moves to k8s; the heavy stateful infra stays in compose (or Helm).
-- [ ] Local cluster with **k3d** (or kind); load/push the serving images.
-- [ ] Move the **stateless serving layer** (FastAPI gateway + prediction
-      consumers) to Deployments + Service/Ingress. Keep Kafka, Spark, MLflow,
-      Postgres, Prometheus, Grafana in docker-compose.
-- [ ] Liveness/readiness probes + resource requests/limits per pod.
-- [ ] **HorizontalPodAutoscaler** on gateway/consumers (CPU, or a custom
-      latency / Kafka-consumer-lag metric via prometheus-adapter).
-- [ ] kube-state-metrics → Prometheus; Grafana panel showing **pod count scaling
-      up as RPS / consumer lag rises**.
-- [ ] Re-run the Locust sweep and watch pods autoscale under load — the concrete
-      "few → thousands of users" demo.
-- [ ] Chaos drill: delete a pod mid-load; confirm the Service reroutes and the
-      HPA recovers. (Mind the 4-core host — don't also run Spark 3-broker + full
-      stack simultaneously.)
+- [x] Local cluster with **k3d**; gateway image side-loaded via `k3d image import`.
+- [x] **Gateway** moved to Deployment + Service + Traefik Ingress (`infra/k8s/`);
+      Kafka, Spark, MLflow, Postgres, Prometheus, Grafana stay in docker-compose
+      (pods reach them via `host.k3d.internal` + a dedicated Kafka listener).
+- [x] Liveness/readiness probes + resource requests/limits per pod.
+- [x] **HorizontalPodAutoscaler** on the gateway (CPU via k3s metrics-server;
+      prometheus-adapter lag metric documented as deferred).
+- [x] kube-state-metrics → Prometheus; Data-Flow panel 9 shows **pod count vs RPS**.
+- [x] Locust sweep re-run: HPA scaled 1→2 at 30 users (clean) and 1→5 at 100
+      users (overload failure-mode lesson) — `docs/k8s-hpa-notes.md`.
+- [x] Chaos drill: pod deleted mid-traffic, 20/20 requests served during
+      replacement (`make k3d-chaos`).
 
 ### Tier D — Stretch (use amplified synthetic data so the big tools earn their place)
 > À la carte per the spec; done items have exit artifacts, the rest are documented
@@ -273,5 +271,5 @@ in [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) as a reference backlog.
 - [x] Tier A — Core walking skeleton
 - [x] Tier B — Streaming + observability
 - [x] Tier C — Production depth
-- [ ] Tier C.5 — Kubernetes + HPA autoscaling
+- [x] Tier C.5 — Kubernetes + HPA autoscaling
 - [ ] Tier D — Stretch

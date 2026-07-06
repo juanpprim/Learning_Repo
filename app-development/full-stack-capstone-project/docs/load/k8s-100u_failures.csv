@@ -1,0 +1,3 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/predict,HTTPError('500 Server Error: Internal Server Error for url: /predict'),74,2026-07-06T16:28:22Z,2026-07-06T16:29:28Z
+POST,/predict,HTTPError('404 Client Error: Not Found for url: /predict'),3150,2026-07-06T16:28:23Z,2026-07-06T16:29:45Z

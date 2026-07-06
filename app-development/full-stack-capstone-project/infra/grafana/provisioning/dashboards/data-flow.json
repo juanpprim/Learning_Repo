@@ -127,6 +127,23 @@
         "overrides": []
       },
       "targets": [{ "expr": "data_drift_share", "legendFormat": "drift share" }]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "9. Gateway pods vs ingress RPS (HPA in action, Tier C.5)",
+      "description": "Pod count from kube-state-metrics overlaid on request rate: as RPS pushes pod CPU past the HPA target, replicas rise; when load stops, they drain back to 1.",
+      "gridPos": { "x": 6, "y": 24, "w": 18, "h": 6 },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas_available{deployment=\"gateway\"}",
+          "legendFormat": "gateway pods"
+        },
+        {
+          "expr": "sum(rate(predictions_total[1m]))",
+          "legendFormat": "predictions/sec"
+        }
+      ]
     }
   ],
   "schemaVersion": 39

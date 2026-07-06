@@ -1,0 +1,13 @@
+# Stable virtual IP + DNS name in front of however many gateway pods exist.
+# The Service load-balances across READY pods only; the HPA changes how many
+# there are, the Service makes that invisible to clients.
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - port: 80
+      targetPort: 8000

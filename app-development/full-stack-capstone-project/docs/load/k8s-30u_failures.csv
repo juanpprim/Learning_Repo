@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/predict,HTTPError('429 Client Error: Too Many Requests for url: /predict'),113,2026-07-06T16:34:45Z,2026-07-06T16:34:49Z
