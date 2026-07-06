@@ -1,0 +1,40 @@
+# Base infrastructure for local dev (Tier A): Postgres + MLflow UI.
+# Tier B adds Kafka/Spark/observability as OVERLAY files next to this one;
+# Tier C adds the backend/frontend app containers.
+#
+#   docker compose -f infra/docker-compose.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: capstone
+      POSTGRES_PASSWORD: capstone
+      POSTGRES_DB: capstone
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U capstone"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # MLflow tracking server + registry UI. SQLite backend keeps it to one
+  # container — no extra DB needed for a learning project.
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.22.2
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflowdata:/mlflow
+
+volumes:
+  pgdata:
+  mlflowdata:

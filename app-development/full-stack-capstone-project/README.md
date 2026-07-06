@@ -1,38 +1,57 @@
-# Full-Stack Capstone Project
+# Full-Stack Capstone — Real-Time ML Platform
 
-> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of each concept below.
+> **Deep dive:** open [`key_concepts.html`](key_concepts.html) in a browser for animated explanations of the underlying concepts.
 
-## Objective
-Ship one complete, usable application that ties together earlier tracks:
-a real backend, a real frontend, and — ideally — a model or pipeline pulled
-in from `mlops-production-ml/` or `data-engineering-at-scale/`.
+House-price prediction platform tying the Learning Repo tracks together:
+FastAPI + MLflow + Postgres + React (Tier A), Kafka + Spark + Prometheus/Grafana
+(Tier B), CI/drift/chaos hardening (Tier C), and stretch tooling (Tier D).
 
-## Suggested shape
-- `backend/` — a FastAPI service (start from `../backend-api-fastapi/src/main.py`
-  as a base) that exposes your core resource(s) *and* a `/predict`-style route
-  backed by a model trained/tracked in `mlops-production-ml/`.
-- `frontend/` — a React app (start from `../frontend-basics-react/`) that lets
-  a user interact with both the CRUD resource and the model-backed endpoint.
+- **What & why:** [`PROJECT_PLAN.md`](PROJECT_PLAN.md)
+- **How (build order, contracts, tests):** [`IMPLEMENTATION_SPEC.md`](IMPLEMENTATION_SPEC.md)
+- **Deferred ideas:** [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md)
 
-## Example project ideas
-- A small "predict and save" app: user submits input -> backend calls a model
-  from `experiment-tracking-mlflow/` -> prediction is stored and shown in a history list.
-- A dataset explorer: backend serves aggregates computed via
-  `spark-fundamentals/` or `modern-data-stack-dbt/`, frontend renders charts/tables.
-- A dashboard for the `monitoring-observability/` drift detector: backend
-  exposes recent drift metrics, frontend renders them as a live-updating chart.
+## Quickstart (Tier A, `direct` mode)
 
-## Checklist
-- [ ] Decide on the project idea and write a one-paragraph spec here.
-- [ ] Build the backend: CRUD + at least one route that calls into another
-      track's model/pipeline.
-- [ ] Build the frontend: at least two connected views (list + detail, or
-      dashboard + form).
-- [ ] Containerize the backend with Docker (reuse patterns from
-      `mlops-production-ml/model-serving-fastapi-docker/`).
-- [ ] Write a short README section here documenting how to run the whole
-      stack locally (`docker run` + `npm run dev`).
+Prereqs: Docker, [uv](https://docs.astral.sh/uv/), Node 20+.
+
+```bash
+make install     # backend (uv sync) + frontend (npm install)
+make up          # Postgres + MLflow UI (http://localhost:5000)
+make seed        # Housing.csv -> Postgres  (synthetic fallback, see below)
+make train       # LinReg + LightGBM -> MLflow registry (@production)
+make run-backend # FastAPI on http://localhost:8000  (docs at /docs)
+make run-frontend# React on http://localhost:5173
+```
+
+### Dataset
+
+Real data: download [Kaggle housing-prices-dataset](https://www.kaggle.com/datasets/yasserh/housing-prices-dataset)
+and place it at `data/Housing.csv`. If the file is absent, `make seed` and
+`make train` fall back to a **deterministic synthetic dataset** with the same
+schema and a real price signal, so everything stays runnable offline.
+
+## Tests
+
+```bash
+make test-unit   # fast: schemas, predictor logic, training floor (no Docker)
+make test        # + integration: real Postgres via testcontainers
+cd frontend && npm test           # Vitest component tests
+cd frontend && npm run test:e2e   # Playwright (needs backend running)
+make load        # Locust baseline -> docs/load/ (see docs/load-baseline.md)
+```
+
+## Layout
+
+```
+backend/   FastAPI app (app/), ML scripts (ml/), tests (tests/)
+frontend/  React + Vite + TS (src/), Vitest + Playwright (tests/)
+infra/     docker-compose files (base now; Kafka/observability overlays in Tier B)
+docs/      load-test results and study write-ups
+```
 
 ## Status
-Not started — fill in the spec above once you've picked a direction and are
-ready to build.
+
+- [x] Tier A — core walking skeleton (direct mode, e2e tested, load baseline)
+- [ ] Tier B — streaming + observability
+- [ ] Tier C — production depth
+- [ ] Tier D — stretch

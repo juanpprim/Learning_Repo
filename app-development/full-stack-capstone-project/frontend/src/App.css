@@ -1,0 +1,69 @@
+/* Minimal styling — enough to read comfortably, nothing more. */
+
+.layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: system-ui, sans-serif;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.predict-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.predict-form label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.predict-form input[type="number"],
+.predict-form select {
+  width: 10rem;
+}
+
+.predict-form .checkbox {
+  justify-content: flex-start;
+}
+
+.predict-form button {
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+}
+
+.result {
+  background: #eef7ee;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.error {
+  color: #b00020;
+}
+
+.history {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.history th,
+.history td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.4rem 0.6rem;
+  text-align: right;
+}
+
+.history th:nth-child(-n + 4),
+.history td:nth-child(-n + 4) {
+  text-align: left;
+}

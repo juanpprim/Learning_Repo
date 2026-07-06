@@ -1,0 +1,8 @@
+# local virtualenv + tool caches
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# MLflow local artifacts (tracked server data lives in the docker volume)
+mlruns/
+mlflow.db
